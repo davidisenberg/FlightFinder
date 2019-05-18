@@ -7,6 +7,7 @@ import pandas as pd
 
 class FlightsRepository:
 
+    #root dir
     __root = "c:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\"
 
     def get_flights(self, fly_from, fly_to, date_from, date_to):
