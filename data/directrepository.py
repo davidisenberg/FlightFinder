@@ -1,50 +1,34 @@
-#!/usr/bin/env python
-
-from sqlalchemy import *
-import pymysql
-from sqlalchemy.orm import Session, sessionmaker
-from model.direct import Direct
-from  sqlalchemy.ext.declarative  import  declarative_base
+import pyarrow as pa
+import pyarrow.parquet as pq
 import pandas as pd
 
-Base  =  declarative_base()
+class DirectRepository:
 
-class DirectsDB(Base):
-    __tablename__ = 'directs'
-    Id = Column(Integer, primary_key=True)
-    FlyFrom = Column(String)
-    FlyTo = Column(String)
+    __root = "c:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\"
 
-    def __init__(self, fly_from, fly_to):
-        self.FlyFrom = fly_from
-        self.FlyTo = fly_to
-
-
-class DirectsRepository:
-
-    def __init__(self):
-        self.engine = create_engine("mysql+pymysql://davidisenberg:vpnzv8zy@localhost/ff?host=localhost?port=3306")
-
-    def get_directs(self, fly_from = None):
-        Session = sessionmaker(bind=self.engine)
-        s = Session()
-        #directs = []
-        #for row in s.query(DirectsDB).filter(DirectsDB.FlyFrom == fly_from):
-        #    directs.append(Direct(row.FlyFrom, row.FlyTo))
-        if fly_from is None:
-            directs = pd.read_sql(s.query(DirectsDB).statement, s.bind)
-        else:
-            directs = pd.read_sql(s.query(DirectsDB).filter(DirectsDB.FlyFrom == fly_from).statement, s.bind)
+    def get_directs(self, fly_from):
+        directs: pd.DataFrame
+        try:
+            table = pq.read_table(self.__root + "directs.parquet")
+            directs = table.to_pandas().drop_duplicates()
+            directs = directs[directs["FlyFrom"] == fly_from]
+        except Exception as e:
+            print(e)
+            directs = pd.DataFrame()
 
         return directs
 
-    def insert_directs(self, directs):
-        Session = sessionmaker(bind=self.engine)
-        s = Session()
-        directs_dbs = []
-        for direct in directs:
-            directs_dbs.append( DirectsDB(direct.FlyFrom,direct.FlyTo))
 
-        s.bulk_save_objects(directs_dbs)
-        s.commit()
+    def insert_directs(self, directs):
+        try:
+            table = pa.Table.from_pandas(directs)
+            pq.write_to_dataset(table,
+                                root_path=self.__root + 'directs.parquet',
+                                partition_cols=["FlyFrom"]
+                                )
+        except Exception as e:
+            print(e)
+
+
+
 

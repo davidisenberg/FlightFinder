@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
 from services.core.directsservice import DirectService
+from services.core.flightservice import FlightService
 from services.core.recoservice_df import RecommendationService
 import json
 import datetime
@@ -24,11 +25,28 @@ def get_recommendations():
     dateTo = input["dateTo"]
     exclusions = input["exclusions"]
 
+    #RecommendationService().get_recommendations(get_flights_temp(), ["EWR", "JFK"], "LHR", [], 0, 100)
+
     #recos = RecommendationService().get_recommendations(get_flights_temp(),["EWR","JFK"],"LHR",[],0,100 )
 
     #return json.dumps([ob.__dict__ for ob in recos])
 
-    return "hello"
+    return "first"
+
+def get_recommendations(flights, fly_from, fly_to, date_from, date_to, exclusions):
+    print("hello")
+    flights = FlightService().get_flights(self, date_from, date_to)
+    RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 0, 100)
+
+@app.route('/addFlights',methods=['POST'])
+def add_flights():
+    input = json.loads(request.data)
+    flyFrom = input["flyFrom"]
+    flyTo = input["flyTo"]
+    dateFrom = input["dateFrom"]
+    dateTo = input["dateTo"]
+
+    FlightService().get_flights( flyFrom,flyTo,dateFrom, dateTo )
 
 
 @app.route('/directs', methods = ['POST'])

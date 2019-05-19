@@ -1,16 +1,16 @@
 from services.vendor.flightsfrom import FlightFromApi
-from data.directrepository import DirectsRepository
+from data.directrepository import DirectRepository
 
 
 class DirectService:
 
     def get_directs(self, fly_from):
 
-        directs = DirectsRepository().get_directs(fly_from)
+        directs = DirectRepository().get_directs(fly_from)
         if len(directs) > 0:
             return directs
 
         directs = FlightFromApi().get_directs(fly_from)
-        DirectsRepository().insert_directs(directs)
+        DirectRepository().insert_directs(directs)
 
         return directs

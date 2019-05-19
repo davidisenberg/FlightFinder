@@ -2,6 +2,7 @@ import requests
 import js2py
 from bs4 import BeautifulSoup
 from model.direct import Direct
+import pandas as pd
 
 class FlightFromApi:
 
@@ -26,6 +27,7 @@ class FlightFromApi:
                 getRoutesJs = js2py.eval_js('function() {  var window = {airport:"", filter:"", routes:"",selected:"",activetab:""};' + script.text + ' return window.routes; }')  # js to esprima syntax tree
                 for route in getRoutesJs().to_list():
                     directs.append(Direct(destination, route["iata_to"]))
+        directs = pd.DataFrame.from_records([direct.to_dict() for direct in directs])
         return directs
 
 
