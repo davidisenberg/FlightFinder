@@ -1,11 +1,12 @@
 
 import requests
 import json
+import
 
 def process():
 
     completed = []
-    queue = ['LHR']
+    queue = ['YYC','LHR']
 
     while len(queue) > 0:
         chosen = queue[0]
@@ -24,10 +25,10 @@ def process():
 
 def addFlights(flyTo):
     print("help")
-    url = 'http://localhost:5000/addflights'
+    url = 'http://localhost:5002/addflights'
     payload = {'flyFrom': 'NYC',
                 'flyTo': flyTo,
-                'dateFrom': '2019-05-01',
+                'dateFrom': '2019-06-01',
                 'dateTo': '2020-01-31' ,
                 'exclusions': ''}
     headers = {'content-type': 'application/json'}
