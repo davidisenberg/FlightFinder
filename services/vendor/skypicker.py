@@ -1,7 +1,4 @@
 import requests
-import js2py
-from bs4 import BeautifulSoup
-from model.direct import Direct
 import pandas as pd
 import datetime
 import json
@@ -36,15 +33,17 @@ class SkyPickerApi:
 
             flights = []
             for sp_flight in sp_flights:
-                flights.append(Flight(sp_flight["flyFrom"], sp_flight["flyTo"], sp_flight["price"],
-                                      sp_flight["airlines"][0], sp_flight["fly_duration"],
-                                      sp_flight["aTimeUTC"], sp_flight["dTimeUTC"] ,sp_flight["route"][0]["flight_no"],
-                                      datetime.date.today()))
+                flights.append({'FlyFrom': sp_flight["flyFrom"],
+                                'FlyTo': sp_flight["flyTo"],
+                                'Price': sp_flight["price"],
+                                'Airline': sp_flight["airlines"][0],
+                                'Duration': sp_flight["fly_duration"],
+                                'ArrivalTimeUTC': sp_flight["aTimeUTC"],
+                                'DepartTimeUTC': sp_flight["dTimeUTC"],
+                                'FlightNum': sp_flight["route"][0]["flight_no"],
+                                'AsOfDate': int(datetime.date.today().strftime('%Y%m%d'))})
 
-            #df1 = pdio.json_normalize(data2)
-            #df2 = pd.DataFrame.from_records(data2, columns=["flyTo","flyFrom","price","airlines"])
-
-            df = pd.DataFrame.from_records([f.to_dict() for f in flights])
+            df = pd.DataFrame(flights)
             if len(df) == 0:
                 return pd.DataFrame()
 
@@ -58,9 +57,3 @@ class SkyPickerApi:
 
 
 #SkyPickerApi().get_flights("JFK","LHR",datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
-
-
-
-
-
-

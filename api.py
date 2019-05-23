@@ -35,7 +35,7 @@ def get_recommendations():
 
 def get_recommendations(flights, fly_from, fly_to, date_from, date_to, exclusions):
     print("hello")
-    flights = FlightService().get_flights(self, date_from, date_to)
+    flights = FlightService().get_flights(date_from, date_to)
     RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 0, 100)
 
 @app.route('/addFlights',methods=['POST'])

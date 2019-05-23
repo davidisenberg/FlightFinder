@@ -10,18 +10,18 @@ class FlightService:
     def get_flights(self, date_from, date_to):
         try:
             flights = []
-            flights = FlightsRepository().get_flights(date_from, date_to)
+            flights = FlightsRepository().get_latest_flights(date_from, date_to)
             if len(flights) > 0:
-               return flights
+                return flights
 
         except Exception as e:
             print(e)
 
         return flights
 
-    def get_flights(self,fly_from, fly_to, date_from, date_to):
+    def get_todays_flights(self,fly_from, fly_to, date_from, date_to):
         try:
-            flights = FlightsRepository().get_flights(fly_from, fly_to, date_from, date_to)
+            flights = FlightsRepository().get_todays_flights(fly_from, fly_to, date_from, date_to)
             if len(flights) > 0:
                return flights
 
@@ -43,12 +43,32 @@ class FlightService:
         except Exception as e:
             print(e)
 
-    def get_flights_from_list(self, flight_list, date_from, date_to):
+    def get_all_flights(self, sources, destinations, date_from, date_to):
         try :
+            flight_list = []
+            for source in sources:
+                for destination in destinations:
+                    source_directs = DirectService().get_directs(source)["FlyTo"].to_list()
+                    destination_directs = DirectService().get_directs(destination)["FlyTo"].to_list()
+                    fl = self.get_flight_list_per_source_destination(source, destination, source_directs, destination_directs)
+                    flight_list = flight_list + fl
+            flight_list = list(set(flight_list))
+            flights= self.get_flights_from_list(flight_list, date_from, date_to)
+
+            return flights
+
+        except Exception as e:
+            print(e)
+
+        return flights
+
+    def get_flights_from_list(self, flight_list, date_from, date_to):
+        try:
             appended_data = None
             for flight_pair in flight_list:
                 print("GetFlights: " + flight_pair[0] + "-> " + flight_pair[1])
-                flights = self.get_flights(flight_pair[0],flight_pair[1],date_from, date_to)
+                flights = self.get_todays_flights(flight_pair[0], flight_pair[1], date_from, date_to)
+                print("Number returned: " + str(len(flights)))
                 if len(flights) == 0:
                     continue
                 elif appended_data is None:
@@ -63,23 +83,19 @@ class FlightService:
 
         return appended_data
 
-    def get_all_flights(self, sources, destinations, date_from, date_to):
-        try :
+    def get_flights_for_one(self, fly_from, date_from, date_to):
+        directs = DirectService().get_directs(fly_from)["FlyTo"].to_list()
+        flight_list = self.get_flight_list_per_source(fly_from, directs)
+
+    def get_flight_list_per_source(self, source, directs):
+        try:
             flight_list = []
-            for source in sources:
-                for destination in destinations:
-                    source_directs = DirectService().get_directs(source)["FlyTo"].to_list()
-                    destination_directs = DirectService().get_directs(destination)["FlyTo"].to_list()
-                    fl = self.get_flight_list_per_source_destination(source, destination, source_directs, destination_directs)
-                    flight_list = flight_list + fl
-            flights= self.get_flights_from_list(flight_list, date_from, date_to)
+            for direct in directs:
+                flight_list.append((source, direct))
 
-            return flights
-
+            return flight_list
         except Exception as e:
             print(e)
-
-        return flights
 
     def get_flight_list_per_source_destination(self, source, destination, source_directs, destination_directs):
         try:
