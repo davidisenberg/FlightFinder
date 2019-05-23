@@ -10,7 +10,7 @@ class Flight:
     ArrivalTimeUTC: datetime
     DepartTimeUTC: datetime
     FlightNum: str
-    AsOfDate: datetime
+    AsOfDate: int
 
     def __init__(self, fly_from, fly_to, price, airline, duration, arrivalTimeUTC, departTimeUTC, flightNum, asOfDate):
         self.FlyFrom = fly_from

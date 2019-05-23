@@ -9,7 +9,7 @@ class DirectRepository:
     def get_directs(self, fly_from):
         directs: pd.DataFrame
         try:
-            table = pq.read_table(self.__root + "directs.parquet")
+            table = pq.read_table(self.__root + "directs3.parquet")
             directs = table.to_pandas().drop_duplicates()
             directs = directs[directs["FlyFrom"] == fly_from]
         except Exception as e:
@@ -23,7 +23,7 @@ class DirectRepository:
         try:
             table = pa.Table.from_pandas(directs)
             pq.write_to_dataset(table,
-                                root_path=self.__root + 'directs.parquet',
+                                root_path=self.__root + 'directs3.parquet',
                                 partition_cols=["FlyFrom"]
                                 )
         except Exception as e:
