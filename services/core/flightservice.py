@@ -36,6 +36,14 @@ class FlightService:
 
         return flights
 
+    def get_one_flight_for_year(self, fly_from, fly_to):
+        try:
+            flights = SkyPickerApi().get_flights(fly_from, fly_to, datetime.date.today(),
+                                                 datetime.date.today() + datetime.timedelta(220))
+            return flights
+        except Exception as e:
+            print(e)
+
     def add_all_flights(self, sources, destinations, date_from, date_to):
         try:
             flights = self.get_all_flights( sources, destinations, date_from, date_to)
@@ -83,9 +91,10 @@ class FlightService:
 
         return appended_data
 
-    def get_flights_for_one(self, fly_from, date_from, date_to):
+    def get_flight_list_for_one(self, fly_from):
         directs = DirectService().get_directs(fly_from)["FlyTo"].to_list()
         flight_list = self.get_flight_list_per_source(fly_from, directs)
+        return flight_list
 
     def get_flight_list_per_source(self, source, directs):
         try:
@@ -138,5 +147,6 @@ class FlightService:
 #list = FlightService().get_flights_from_list([("JFK","LHR"),("LHR","JFK")],datetime.date(2019,6,1), datetime.date(2019,6,30))
 #list
 
-list = FlightService().add_all_flights(["JFK","EWR","LGA"],["CTG"],datetime.date(2019,6,1), datetime.date(2019,9,30))
-list
+#list = FlightService().add_all_flights(["JFK","EWR","LGA"],["CTG"],datetime.date(2019,6,1), datetime.date(2019,9,30))
+#list
+

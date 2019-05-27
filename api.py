@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask import request
 from services.core.directsservice import DirectService
 from services.core.flightservice import FlightService
@@ -9,34 +10,47 @@ import pandas as pd
 from model.flight import Flight
 
 app = Flask(__name__)
+CORS(app)
 print(__name__)
 
 @app.route('/')
 def get_main():
     return "hello"
 
+def datetime_handler(x):
+    if isinstance(x, datetime.datetime):
+        return x.isoformat()
+    return x
 
 @app.route('/recos',methods=['POST'])
 def get_recommendations():
-    input = json.loads(request.data)
-    flyFrom = input["flyFrom"]
-    flyTo = input["flyTo"]
-    dateFrom = input["dateFrom"]
-    dateTo = input["dateTo"]
-    exclusions = input["exclusions"]
+    try:
+        print("yes yes")
+        input = json.loads(request.data)
+        flyFrom = [input["flyFrom"]]
+        flyTo = [input["flyTo"]]
+        dateFrom = input["dateFrom"]
+        dateTo = input["dateTo"]
+        exclusions = []
 
-    #RecommendationService().get_recommendations(get_flights_temp(), ["EWR", "JFK"], "LHR", [], 0, 100)
+        return get_recommendations(flyFrom, flyTo, dateFrom, dateTo, exclusions)
+    except Exception as e:
+        return json.dumps(e)
 
-    #recos = RecommendationService().get_recommendations(get_flights_temp(),["EWR","JFK"],"LHR",[],0,100 )
 
-    #return json.dumps([ob.__dict__ for ob in recos])
-
-    return "first"
-
-def get_recommendations(flights, fly_from, fly_to, date_from, date_to, exclusions):
+def get_recommendations(fly_from, fly_to, date_from, date_to, exclusions):
     print("hello")
     flights = FlightService().get_flights(date_from, date_to)
-    RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 0, 100)
+    paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 2, 10)
+    list_of_paths = []
+    for path in paths:
+        list_of_flights = []
+        for flights in path:
+            list_of_flights.append(flights.to_dict())
+        list_of_paths.append(list_of_flights)
+    list_of_paths = json.dumps(list_of_paths, default=datetime_handler)
+    return list_of_paths
+
 
 @app.route('/addFlights',methods=['POST'])
 def add_flights():

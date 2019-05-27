@@ -32,7 +32,7 @@ class SquaredNumbers(luigi.Task):
         return [PrintNumbers(n=self.n)]
 
     def output(self):
-        return luigi.LocalTarget()
+        return luigi.LocalTarget("squares_up_to_{}.txt".format(self.n))
 
     def run(self):
         print("running")

@@ -16,7 +16,9 @@ class SkyPickerApi:
     def get_request(self,fly_from, fly_to, date_from : datetime, date_to: datetime):
         date_from = date_from.strftime("%d/%m/%Y")
         date_to = date_to.strftime("%d/%m/%Y")
-        return "https://api.skypicker.com/flights?fly_from=" + fly_from + "&fly_to=" + fly_to + "&date_from=" + date_from + "&date_to=" + date_to + "&curr=USD&direct_flights=1&limit=10000&dtime_from=07:25";
+        return "https://api.skypicker.com/flights?fly_from=" + fly_from + "&fly_to=" + \
+               fly_to + "&date_from=" + date_from + "&date_to=" + \
+               date_to + "&curr=USD&direct_flights=1&limit=10000&dtime_from=07:25";
 
 
     def call_api(self,url):

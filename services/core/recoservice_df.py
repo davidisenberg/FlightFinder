@@ -2,6 +2,7 @@ import queue
 from enum import Enum
 import datetime
 import pandas as pd
+import decimal
 
 class FlightState(Enum):
     at_source = 0
@@ -15,11 +16,13 @@ class FlightItem:
     current_loc: str
     current_path: []
     state: FlightState
+    price: decimal
 
-    def __init__(self, current_loc, current_path, state):
+    def __init__(self, current_loc, current_path, state, price):
         self.current_loc = current_loc
         self.current_path = current_path
         self.state = state
+        self.price = price
 
     def get_prev_arrival_time(self):
         return self.current_path[len(self.current_path) - 1]["ArrivalTimeUTC"]
@@ -28,7 +31,8 @@ class FlightItem:
         return {
             'current_loc': self.current_loc,
             'current_path': self.current_path,
-            'state': self.state
+            'state': self.state,
+            'price': self.price
         }
 
     def __str__(self):
@@ -52,8 +56,8 @@ class RecommendationService:
                 self.process(q, current, flights, exclusions, targets, sources, days_min, days_max)
                 #for elem in list(q.queue):
                 #    print(str(elem))
-
-        return df
+        path = df.sort_values(by=['price'])["current_path"].to_list()# paths = df["current_path"].to_list()
+        return path
 
     def process(self, q, current : FlightItem, flights, exclusions, targets, sources, days_min, days_max):
         if current.state == FlightState.at_source:
@@ -70,7 +74,7 @@ class RecommendationService:
     def get_initial_queue(self, sources):
         q = queue.Queue()
         for source in sources:
-            q.put_nowait(FlightItem(source, [], FlightState.at_source))
+            q.put_nowait(FlightItem(source, [], FlightState.at_source,0))
         return q
 
     def update_queue_at_source(self, q, current, flight_df, exclusions, targets, sources):
@@ -136,7 +140,9 @@ class RecommendationService:
             new_path = current.current_path.copy()
             new_path.append(stop)
 
-            q.put(FlightItem(stop["FlyTo"], new_path, flight_state))
+            new_price = current.price + stop["Price"]
+
+            q.put(FlightItem(stop["FlyTo"], new_path, flight_state, new_price))
 
 
 

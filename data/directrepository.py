@@ -6,10 +6,42 @@ class DirectRepository:
 
     __root = "c:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\"
 
+    def get_all_directs(self):
+        directs: pd.DataFrame
+        try:
+
+            table = pq.read_table(self.__root + "directs.parquet")
+            directs = table.to_pandas().drop_duplicates()
+        except Exception as e:
+            print(e)
+            directs = pd.DataFrame()
+
+        return directs
+
+    def get_directs_from_list(self, fly_from_list):
+        try:
+            # directs = pq.ParquetDataset(self.__root + "directs.parquet",
+            #                     filters=[ [('FlyFrom', '=', "JFK")],[('FlyFrom', '=', "EWR")]]
+            #                             )
+
+
+            directs = pq.ParquetDataset(self.__root + "directs.parquet",
+                                        filters=[('FlyFrom', '=', "JFK")]
+                                        )
+            directs_pd = directs.read().to_pandas().drop_duplicates()
+            return directs_pd
+
+        except Exception as e:
+            print(e)
+            directs = pd.DataFrame()
+
+        return directs
+
     def get_directs(self, fly_from):
         directs: pd.DataFrame
         try:
-            table = pq.read_table(self.__root + "directs3.parquet")
+
+            table = pq.read_table(self.__root + "directs.parquet")
             directs = table.to_pandas().drop_duplicates()
             directs = directs[directs["FlyFrom"] == fly_from]
         except Exception as e:
@@ -23,7 +55,7 @@ class DirectRepository:
         try:
             table = pa.Table.from_pandas(directs)
             pq.write_to_dataset(table,
-                                root_path=self.__root + 'directs3.parquet',
+                                root_path=self.__root + 'directs.parquet',
                                 partition_cols=["FlyFrom"]
                                 )
         except Exception as e:

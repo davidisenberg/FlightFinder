@@ -26,6 +26,7 @@ class FlightsRepository:
 
     def get_latest_flights(self, date_from, date_to):
         try:
+            '''
             pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
                                     filters=[('AsOfDate', '=',
                                               int(datetime.date.today().strftime('%Y%m%d'))), ])
@@ -34,6 +35,16 @@ class FlightsRepository:
                                     filters=[('AsOfDate', '=',
                                               int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
                                                   '%Y%m%d'))), ])
+            '''
+            pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
+                                    filters=[('AsOfDate', '=',
+                                          int(datetime.date(2019,5,19).strftime('%Y%m%d'))), ])
+
+            pq2 = pq.ParquetDataset(self.__root + "flights.parquet",
+                                    filters=[('AsOfDate', '=',
+                                              int((datetime.date(2019,5,19) + datetime.timedelta(days=-1)).strftime(
+                                                  '%Y%m%d'))), ])
+
 
             flights: pd.DataFrame = pd.DataFrame()
             if len(pq1.pieces) > 0:
@@ -90,4 +101,9 @@ class FlightsRepository:
         except Exception as e:
             print(e)
 
-
+'''
+start = datetime.datetime(2019,6,1)
+end = datetime.datetime(2019,6,15)
+flights = FlightsRepository().get_latest_flights(start, end)
+flights
+'''
