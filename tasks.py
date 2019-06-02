@@ -51,4 +51,5 @@ class SquaredNumbers(luigi.Task):
 
 if __name__ == '__main__':
     luigi.run()
-#python tasks.py SquaredNumbers --local-scheduler --n 20
+
+#SquaredNumbers --local-scheduler --n 20

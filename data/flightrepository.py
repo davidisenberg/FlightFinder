@@ -26,26 +26,26 @@ class FlightsRepository:
 
     def get_latest_flights(self, date_from, date_to):
         try:
-            '''
+
             pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
-                                    filters=[('AsOfDate', '=',
+                                    filters=[('DataDate', '=',
                                               int(datetime.date.today().strftime('%Y%m%d'))), ])
 
             pq2 = pq.ParquetDataset(self.__root + "flights.parquet",
-                                    filters=[('AsOfDate', '=',
+                                    filters=[('DataDate', '=',
                                               int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
                                                   '%Y%m%d'))), ])
             '''
             pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
-                                    filters=[('AsOfDate', '=',
+                                    filters=[('DataDate', '=',
                                           int(datetime.date(2019,5,19).strftime('%Y%m%d'))), ])
 
             pq2 = pq.ParquetDataset(self.__root + "flights.parquet",
-                                    filters=[('AsOfDate', '=',
+                                    filters=[('DataDate', '=',
                                               int((datetime.date(2019,5,19) + datetime.timedelta(days=-1)).strftime(
                                                   '%Y%m%d'))), ])
 
-
+             '''
             flights: pd.DataFrame = pd.DataFrame()
             if len(pq1.pieces) > 0:
                 flights = flights.append(pq1.read().to_pandas())
@@ -69,7 +69,7 @@ class FlightsRepository:
         try:
 
             pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
-                                        filters=[('AsOfDate', '=',
+                                        filters=[('DataDate', '=',
                                                   int(datetime.date.today().strftime('%Y%m%d'))), ])
 
             flights : pd.DataFrame = pd.DataFrame()
@@ -96,7 +96,7 @@ class FlightsRepository:
             table = pa.Table.from_pandas(flights,preserve_index=False)
             pq.write_to_dataset(table,
                                 root_path=self.__root + 'flights.parquet',
-                                partition_cols=['AsOfDate']
+                                partition_cols=['DataDate','FlyFrom','FlyTo']
                               )
         except Exception as e:
             print(e)

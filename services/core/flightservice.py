@@ -33,6 +33,7 @@ class FlightService:
             return flights
         except Exception as e:
             print(e)
+            raise
 
         return flights
 
@@ -43,6 +44,16 @@ class FlightService:
             return flights
         except Exception as e:
             print(e)
+            raise
+
+    def add_one_flight_for_year(self,fly_from,fly_to):
+        try:
+            flights = self.get_one_flight_for_year(fly_from, fly_to)
+            FlightsRepository().insert_flights(flights)
+        except Exception as e:
+            print(e)
+            raise
+
 
     def add_all_flights(self, sources, destinations, date_from, date_to):
         try:
@@ -50,6 +61,7 @@ class FlightService:
             FlightsRepository().insert_flights(flights)
         except Exception as e:
             print(e)
+            raise
 
     def get_all_flights(self, sources, destinations, date_from, date_to):
         try :
@@ -67,6 +79,7 @@ class FlightService:
 
         except Exception as e:
             print(e)
+            raise
 
         return flights
 

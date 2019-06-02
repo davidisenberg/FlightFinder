@@ -43,7 +43,7 @@ class SkyPickerApi:
                                 'ArrivalTimeUTC': sp_flight["aTimeUTC"],
                                 'DepartTimeUTC': sp_flight["dTimeUTC"],
                                 'FlightNum': sp_flight["route"][0]["flight_no"],
-                                'AsOfDate': int(datetime.date.today().strftime('%Y%m%d'))})
+                                'DataDate': int(datetime.date.today().strftime('%Y%m%d'))})
 
             df = pd.DataFrame(flights)
             if len(df) == 0:
@@ -54,6 +54,7 @@ class SkyPickerApi:
             return df
         except Exception as e:
             print(e)
+            raise
 
         return pd.DataFrame()
 
