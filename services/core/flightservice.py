@@ -25,7 +25,6 @@ class FlightService:
             if len(flights) > 0:
                return flights
 
-            time.sleep(.4)
             flights = SkyPickerApi().get_flights(fly_from, fly_to, date_from, date_to)
             if len(flights) == 0:
                 return pd.DataFrame()

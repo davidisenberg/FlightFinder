@@ -20,7 +20,7 @@ class LoadFlight(luigi.Task):
         return luigi.LocalTarget('./storage/localtargets/Data_%s.txt' % name)
 
     def run(self):
-        time.sleep(.500)
+        time.sleep(.300)
         FlightService().add_one_flight_for_year(self.fly_from,self.fly_to)
         with self.output().open('w') as f:
             f.write('%s' % self.fly_from)
@@ -34,7 +34,7 @@ class LoadAllFlights(luigi.Task):
        return luigi.LocalTarget('./storage/localtargets/Complete.txt')
 
     def run(self):
-        directs = DirectService().get_directs_list()[:1000]
+        directs = DirectService().get_directs_list()[:3]
 
         FLY_FROM = 0
         FLY_TO = 1
