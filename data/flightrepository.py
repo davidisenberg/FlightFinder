@@ -5,16 +5,17 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pandas as pd
 import datetime
+import os
 
 class FlightsRepository:
 
     #root dir
-    __root = "c:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\"
+    __flight_parquet = os.path.join("storage","flights.parquet")
 
     def get_flights_for_dates(self, date_from, date_to):
         flights: pd.DataFrame
         try:
-            table = pq.read_table(self.__root + "flights.parquet")
+            table = pq.read_table(self.__flight_parquet)
             flights = table.to_pandas().drop_duplicates()
             flights = flights[(flights['DepartTimeUTC'] > date_from) &
                               (flights['DepartTimeUTC'] < date_to)  ]
@@ -27,11 +28,11 @@ class FlightsRepository:
     def get_latest_flights(self, date_from, date_to):
         try:
 
-            pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
+            pq1 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
                                               int(datetime.date.today().strftime('%Y%m%d'))), ])
 
-            pq2 = pq.ParquetDataset(self.__root + "flights.parquet",
+            pq2 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
                                               int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
                                                   '%Y%m%d'))), ])
@@ -68,7 +69,7 @@ class FlightsRepository:
     def get_todays_flights(self, fly_from, fly_to, date_from, date_to):
         try:
 
-            pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
+            pq1 = pq.ParquetDataset(self.__flight_parquet,
                                         filters=[('DataDate', '=',
                                                   int(datetime.date.today().strftime('%Y%m%d'))), ])
 
@@ -95,7 +96,7 @@ class FlightsRepository:
         try:
             table = pa.Table.from_pandas(flights,preserve_index=False)
             pq.write_to_dataset(table,
-                                root_path=self.__root + 'flights.parquet',
+                                root_path=self.__flight_parquet,
                                 partition_cols=['DataDate','FlyFrom','FlyTo']
                               )
         except Exception as e:

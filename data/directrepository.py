@@ -1,16 +1,17 @@
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pandas as pd
+import os
 
 class DirectRepository:
 
-    __root = "c:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\"
+    __directs_parquet = os.path.join("storage", "directs.parquet")
 
     def get_all_directs(self):
         directs: pd.DataFrame
         try:
 
-            table = pq.read_table(self.__root + "directs.parquet")
+            table = pq.read_table(self.__directs_parquet)
             directs = table.to_pandas().drop_duplicates()
         except Exception as e:
             print(e)
@@ -25,7 +26,7 @@ class DirectRepository:
             #                             )
 
 
-            directs = pq.ParquetDataset(self.__root + "directs.parquet",
+            directs = pq.ParquetDataset(self.__directs_parquet,
                                         filters=[('FlyFrom', '=', "JFK")]
                                         )
             directs_pd = directs.read().to_pandas().drop_duplicates()
@@ -41,7 +42,7 @@ class DirectRepository:
         directs: pd.DataFrame
         try:
 
-            table = pq.read_table(self.__root + "directs.parquet")
+            table = pq.read_table(self.__directs_parquet)
             directs = table.to_pandas().drop_duplicates()
             directs = directs[directs["FlyFrom"] == fly_from]
         except Exception as e:
@@ -55,7 +56,7 @@ class DirectRepository:
         try:
             table = pa.Table.from_pandas(directs)
             pq.write_to_dataset(table,
-                                root_path=self.__root + 'directs.parquet',
+                                root_path=self.__directs_parquet,
                                 partition_cols=["FlyFrom"]
                                 )
         except Exception as e:

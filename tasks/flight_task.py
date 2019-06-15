@@ -2,7 +2,7 @@ import datetime
 import time
 from services.core.directsservice import DirectService
 from services.core.flightservice import FlightService
-
+import os
 import luigi
 
 
@@ -10,14 +10,17 @@ import luigi
 #luigi --module flight_task LoadAllFlights --local-scheduler
 
 
+
 class LoadFlight(luigi.Task):
+    __local_target = os.path.join("storage", "local_targets")
     fly_from = luigi.Parameter()
     fly_to = luigi.Parameter()
     date = luigi.DateParameter()
 
     def output(self):
         name = "" + self.fly_from + "_" + self.fly_to
-        return luigi.LocalTarget('./storage/localtargets/Data_%s.txt' % name)
+        path = os.path.join(self.__local_target,"Data_ " + name)
+        return luigi.LocalTarget(path)
 
     def run(self):
         time.sleep(.300)
@@ -27,11 +30,12 @@ class LoadFlight(luigi.Task):
 
 
 class LoadAllFlights(luigi.Task):
-
+    __local_target = os.path.join("storage", "local_targets")
 
     def output(self):
        #return luigi.LocalTarget('Complete_' + datetime.date.today().strftime('%Y%m%d') + '.txt')
-       return luigi.LocalTarget('./storage/localtargets/Complete.txt')
+       path = os.path.join(self.__local_target, "Complete.txt")
+       return luigi.LocalTarget(path)
 
     def run(self):
         directs = DirectService().get_directs_list()[:3]
