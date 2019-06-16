@@ -8,9 +8,7 @@ class DirectRepository:
     __directs_parquet = os.path.join("storage", "directs.parquet")
 
     def get_all_directs(self):
-        directs: pd.DataFrame
         try:
-
             table = pq.read_table(self.__directs_parquet)
             directs = table.to_pandas().drop_duplicates()
         except Exception as e:
@@ -39,7 +37,6 @@ class DirectRepository:
         return directs
 
     def get_directs(self, fly_from):
-        directs: pd.DataFrame
         try:
 
             table = pq.read_table(self.__directs_parquet)
