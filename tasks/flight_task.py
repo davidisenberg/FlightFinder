@@ -38,16 +38,18 @@ class LoadAllFlights(luigi.Task):
        return luigi.LocalTarget(path)
 
     def run(self):
-        directs = DirectService().get_directs_list()
+        directs = DirectService().get_directs_list()[:1]
+        today = datetime.date.today()
 
         FLY_FROM = 0
         FLY_TO = 1
-        get_flight_task = [LoadFlight(fly_from=direct[FLY_FROM],fly_to=direct[FLY_TO],date=datetime.date.today())
+        get_flight_task = [LoadFlight(fly_from=direct[FLY_FROM],fly_to=direct[FLY_TO],date=today)
                            for direct in directs]
         yield get_flight_task
 
         with self.output().open('w') as f:
             f.write('Tada!')
+
 
 
 if __name__ == '__main__':

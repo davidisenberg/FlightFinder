@@ -11,11 +11,12 @@ class FlightsRepository:
 
     #root dir
     __flight_parquet = os.path.join("storage","flights.parquet")
+    __flight_partial_parquet = os.path.join("storage", "flights_partial.parquet")
 
     def get_flights_for_dates(self, date_from, date_to):
-        flights: pd.DataFrame
         try:
             table = pq.read_table(self.__flight_parquet)
+
             flights = table.to_pandas().drop_duplicates()
             flights = flights[(flights['DepartTimeUTC'] > date_from) &
                               (flights['DepartTimeUTC'] < date_to)  ]
@@ -24,6 +25,20 @@ class FlightsRepository:
             flights = pd.DataFrame()
 
         return flights
+
+    def get_flights_for_dates_and_list(self, date_from, date_to, list):
+        try:
+            pq1 = pq.ParquetDataset(self.__flight_parquet,
+                                   filters=[('DataDate', '=', "20190615")])
+            flights = pq1.read().to_pandas()
+            return flights
+        except Exception as e:
+            print(e)
+            flights = pd.DataFrame()
+
+        return flights
+
+
 
     def get_latest_flights(self, date_from, date_to):
         try:
@@ -99,6 +114,16 @@ class FlightsRepository:
                                 root_path=self.__flight_parquet,
                                 partition_cols=['DataDate','FlyFrom','FlyTo']
                               )
+        except Exception as e:
+            print(e)
+
+    def insert_new_flights(self, flights):
+        try:
+            table = pa.Table.from_pandas(flights, preserve_index=False)
+            pq.write_to_dataset(table,
+                                root_path=self.__flight_parquet,
+                                partition_cols=['DataDate']
+                                )
         except Exception as e:
             print(e)
 
