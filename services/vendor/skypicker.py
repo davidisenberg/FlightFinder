@@ -133,8 +133,8 @@ class SkyPickerApi:
 
 url = SkyPickerApi().get_request("AAL", "FAE", datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
 json = SkyPickerApi().get_json(url)
-# for i in range(1000):
-#     df = SkyPickerApi().json_to_pd(json)
+for i in range(1000):
+     df = SkyPickerApi().json_to_pd(json)
 
 
 
