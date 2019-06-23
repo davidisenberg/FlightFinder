@@ -130,11 +130,13 @@ class SkyPickerApi:
         df['DepartTimeUTC'] = pd.to_datetime(df['DepartTimeUTC'], unit='s')
         return df
 
+    def json_to_pd2(self, flights):
+
 
 url = SkyPickerApi().get_request("AAL", "FAE", datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
-json = SkyPickerApi().get_json(url)
 for i in range(1000):
-     df = SkyPickerApi().json_to_pd(json)
+    json = SkyPickerApi().get_json(url)
+    df = SkyPickerApi().json_to_pd(json)
 
 
 
