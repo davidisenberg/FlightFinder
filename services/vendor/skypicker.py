@@ -24,9 +24,9 @@ class SkyPickerApi:
     def call_api(self,url):
         try:
 
-            data = requests.get(url).text
+            #data = requests.get(url).text
 
-            sp_flights = json.loads(data)["data"]
+            #sp_flights = json.loads(data)["data"]
 
             # flights = []
             # for sp_flight in sp_flights:
