@@ -24,6 +24,14 @@ class SkyPickerApi:
     def call_api(self,url):
         try:
 
+            fo = open("testdata.obj", 'rb')
+            data = pickle.load(fo)
+            #data = requests.get(url).text
+
+            # fileObject = open("testdata.obj", 'wb')
+            # pickle.dump(data, fileObject)
+            # fileObject.close()
+
             #data = requests.get(url).text
 
             #sp_flights = json.loads(data)["data"]
@@ -90,6 +98,43 @@ class SkyPickerApi:
             raise
 
         return pd.DataFrame()
+
+    def get_json(self, url):
+        data = requests.get(url).text
+
+        # fileObject = open("testdata.obj", 'wb')
+        # pickle.dump(data, fileObject)
+        # fileObject.close()
+
+        sp_flights = json.loads(data)["data"]
+        return sp_flights
+
+    def json_to_pd(self, sp_flights):
+        flights = []
+        for sp_flight in sp_flights:
+            flights.append({'FlyFrom': sp_flight["flyFrom"],
+                            'FlyTo': sp_flight["flyTo"],
+                            'Price': sp_flight["price"],
+                            'Airline': sp_flight["airlines"][0],
+                            'Duration': sp_flight["fly_duration"],
+                            'ArrivalTimeUTC': sp_flight["aTimeUTC"],
+                            'DepartTimeUTC': sp_flight["dTimeUTC"],
+                            'FlightNum': sp_flight["route"][0]["flight_no"],
+                            'DataDate': int(datetime.date.today().strftime('%Y%m%d'))})
+
+        df = pd.DataFrame(flights)
+        if len(df) == 0:
+            return pd.DataFrame()
+
+        df['ArrivalTimeUTC'] = pd.to_datetime(df['ArrivalTimeUTC'], unit='s')
+        df['DepartTimeUTC'] = pd.to_datetime(df['DepartTimeUTC'], unit='s')
+        return df
+
+
+url = SkyPickerApi().get_request("AAL", "FAE", datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+json = SkyPickerApi().get_json(url)
+df = SkyPickerApi().json_to_pd(json)
+
 
 
 
