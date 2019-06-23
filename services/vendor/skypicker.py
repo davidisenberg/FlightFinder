@@ -3,8 +3,8 @@ import pandas as pd
 import datetime
 import json
 import pickle
-from model.flight import Flight
-import pandas.io.json as pdio
+#from model.flight import Flight
+#import pandas.io.json as pdio
 
 class SkyPickerApi:
 
