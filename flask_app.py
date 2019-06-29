@@ -12,7 +12,11 @@ import datetime
 
 print ("hello")
 
-app = Flask(__name__, static_folder="ui/build/static", template_folder="ui/build")
+if __name__ == '__main__':
+    app = Flask(__name__, static_folder="ui/build/static", template_folder="ui/build")
+else:
+    app = Flask(__name__)
+
 CORS(app)
 print(__name__)
 
