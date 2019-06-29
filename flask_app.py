@@ -97,5 +97,6 @@ def get_flights_temp():
     return flights
 '''
 
-app.run(port=5002)
+if __name__ == 'main':
+    app.run(port=5002)
 

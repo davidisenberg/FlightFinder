@@ -107,17 +107,17 @@ class FlightsRepository:
         return flights
 
 
-    def insert_flights(self, flights):
+    def insert_partial_flights(self, flights):
         try:
             table = pa.Table.from_pandas(flights,preserve_index=False)
             pq.write_to_dataset(table,
-                                root_path=self.__flight_parquet,
+                                root_path=self.__flight_partial_parquet,
                                 partition_cols=['DataDate','FlyFrom','FlyTo']
                               )
         except Exception as e:
             print(e)
 
-    def insert_new_flights(self, flights):
+    def insert_flights(self, flights):
         try:
             table = pa.Table.from_pandas(flights, preserve_index=False)
             pq.write_to_dataset(table,
@@ -126,6 +126,29 @@ class FlightsRepository:
                                 )
         except Exception as e:
             print(e)
+
+    def get_dates_flights(self, data_date):
+        try:
+            pq1 = pq.ParquetDataset(self.__flight_partial_parquet,
+                                    filters=[('DataDate', '=',
+                                              int(data_date.strftime('%Y%m%d'))), ])
+            flights: pd.DataFrame = pd.DataFrame()
+            flights = flights.append(pq1.read().to_pandas())
+            flights.drop_duplicates()
+
+            if (len(flights) == 0):
+                return pd.DataFrame()
+
+            return flights
+        except Exception as e:
+            print(e)
+            flights = pd.DataFrame()
+
+
+        except Exception as e:
+            print(e)
+
+
 
 '''
 start = datetime.datetime(2019,6,1)

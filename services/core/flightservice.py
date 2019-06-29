@@ -48,7 +48,7 @@ class FlightService:
     def add_one_flight_for_year(self,fly_from,fly_to):
         try:
             flights = self.get_one_flight_for_year(fly_from, fly_to)
-            FlightsRepository().insert_flights(flights)
+            FlightsRepository().insert_partial_flights(flights)
         except Exception as e:
             print(e)
             raise
@@ -138,7 +138,7 @@ class FlightService:
 
         return flight_list
 
-    def add_flights(self,  ):
+    def add_flights(self ):
         completed = []
         queue = ['LHR']
 
@@ -155,6 +155,16 @@ class FlightService:
                 if direct in completed or direct in queue:
                     continue
                 queue.append(direct)
+
+    def consolidate_partials(self, data_date):
+        try:
+            flights = FlightsRepository().get_dates_flights(data_date)
+            FlightsRepository().insert_flights(flights)
+        except:
+            print("consolidate_partials")
+            raise
+
+
 
 #list = FlightService().get_flights_from_list([("JFK","LHR"),("LHR","JFK")],datetime.date(2019,6,1), datetime.date(2019,6,30))
 #list
