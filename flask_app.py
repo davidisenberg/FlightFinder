@@ -1,21 +1,28 @@
+print("what")
+
 from flask import Flask
 from flask_cors import CORS
 from flask import request
 from services.core.directsservice import DirectService
 from services.core.flightservice import FlightService
 from services.core.recoservice_df import RecommendationService
+from flask import render_template
 import json
 import datetime
-import pandas as pd
-from model.flight import Flight
 
-app = Flask(__name__)
+print ("hello")
+
+app = Flask(__name__, static_folder="ui/build/static", template_folder="ui/build")
 CORS(app)
 print(__name__)
 
 @app.route('/hello')
 def get_main():
     return "hello"
+
+@app.route('/')
+def get_ui():
+    return render_template('index.html')
 
 def datetime_handler(x):
     if isinstance(x, datetime.datetime):
@@ -97,6 +104,6 @@ def get_flights_temp():
     return flights
 '''
 
-if __name__ == 'main':
+if __name__ == '__main__':
     app.run(port=5002)
 
