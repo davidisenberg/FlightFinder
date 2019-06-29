@@ -13,7 +13,7 @@ app = Flask(__name__)
 CORS(app)
 print(__name__)
 
-@app.route('/')
+@app.route('/hello')
 def get_main():
     return "hello"
 
