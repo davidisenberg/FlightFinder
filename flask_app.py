@@ -13,7 +13,7 @@ import datetime
 print ("hello")
 
 if __name__ == '__main__':
-    app = Flask(__name__, static_folder="ui/build/static", template_folder="ui/build")
+    app = Flask(__name__, static_folder="static", template_folder="templates")
 else:
     app = Flask(__name__)
 

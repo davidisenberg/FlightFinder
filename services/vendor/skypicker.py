@@ -9,6 +9,7 @@ import pickle
 class SkyPickerApi:
 
     def get_flights(self,fly_from, fly_to, date_from, date_to):
+
         url = self.get_request(fly_from, fly_to, date_from, date_to)
         return self.call_api(url)
 
@@ -23,6 +24,8 @@ class SkyPickerApi:
 
     def call_api(self, url):
         try:
+
+
             # fo = open("testdata.obj", 'rb')
             # data = pickle.load(fo)
             data = requests.get(url).text
@@ -30,6 +33,10 @@ class SkyPickerApi:
             # fileObject = open("testdata.obj", 'wb')
             # pickle.dump(data, fileObject)
             # fileObject.close()
+            if data.index("error"):
+                print("No data returrned for url: " + url)
+                return pd.DataFrame()
+
 
             sp_flights = json.loads(data)["data"]
 
@@ -53,7 +60,7 @@ class SkyPickerApi:
             df['DepartTimeUTC'] = pd.to_datetime(df['DepartTimeUTC'], unit='s')
             return df
         except Exception as e:
-            print("Error in skypicker: " + e)
+            print("Error in skypicker: " + str(e))
             raise
 
         return pd.DataFrame()
@@ -90,13 +97,10 @@ class SkyPickerApi:
         return df
 
 
-# url = SkyPickerApi().get_request("AAL", "FAE", datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
-# for i in range(1000):
-#     json = SkyPickerApi().get_json(url)
-#     df = SkyPickerApi().json_to_pd(json)
-
-
-
+if __name__ == '__main__':
+    #url = SkyPickerApi().get_request("AAL", "FAE", datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+    result = SkyPickerApi().get_flights("BIA", "LEH", datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))
+    result = None
 
 
 #SkyPickerApi().get_flights("JFK","LHR",datetime.date.today(), datetime.date.today() + datetime.timedelta(days=2))

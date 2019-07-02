@@ -21,8 +21,9 @@ class LoadFlight(luigi.Task):
         return luigi.LocalTarget(path)
 
     def run(self):
-        time.sleep(.100)
-        FlightService().add_one_flight_for_year(self.fly_from,self.fly_to)
+        if self.fly_from != 'LEH' and self.fly_to == 'LEH':
+            time.sleep(.100)
+            FlightService().add_one_flight_for_year(self.fly_from,self.fly_to)
         with self.output().open('w') as f:
             f.write('%s' % self.fly_from)
 
