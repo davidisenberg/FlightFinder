@@ -66,7 +66,7 @@ class CreateDailyFile(luigi.Task):
         FlightService().consolidate_partials()
 
         df = FlightService().get_flights_for_date(datetime.date.today().strftime('%Y%m%d'))
-        if(df[0].count() > 10000):
+        if(df.count()[0] > 10000):
             with self.output().open('w') as f:
                 f.write('Yep, done for day... and what!')
 
