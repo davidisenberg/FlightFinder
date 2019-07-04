@@ -33,7 +33,7 @@ class SkyPickerApi:
             # fileObject = open("testdata.obj", 'wb')
             # pickle.dump(data, fileObject)
             # fileObject.close()
-            if data.index("error"):
+            if "error" in data:
                 print("No data returrned for url: " + url)
                 return pd.DataFrame()
 
