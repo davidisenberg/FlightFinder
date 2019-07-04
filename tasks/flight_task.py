@@ -58,19 +58,41 @@ class CreateDailyFile(luigi.Task):
 
     def output(self):
         # return luigi.LocalTarget('Complete_' + datetime.date.today().strftime('%Y%m%d') + '.txt')
-        path = os.path.join(self.__local_target, datetime.date.today().strftime('%Y%m%d') + ".txt")
+        path = os.path.join(self.__local_target, datetime.date.today().strftime('%Y%m%d') + "done.txt")
         #path = os.path.join(self.__local_target, "David.txt")
         return luigi.LocalTarget(path)
 
     def run(self):
-        FlightService().consolidate_partials(datetime.date.today())
+        FlightService().consolidate_partials()
+
+        df = FlightService().get_flights_for_date(datetime.date.today().strftime('%Y%m%d'))
+        if(df.count > 10000):
+            with self.output().open('w') as f:
+                f.write('Yep, done for day... and what!')
+
+
+class CleanUp(luigi.Task):
+    __local_target = os.path.join("storage", "local_targets")
+    __partial_files = os.path.join("storage", "flights_partial.parquet")
+
+    def requires(self):
+        return CreateDailyFile()
+
+    def output(self):
+        # return luigi.LocalTarget('Complete_' + datetime.date.today().strftime('%Y%m%d') + '.txt')
+        path = os.path.join(self.__local_target, datetime.date.today().strftime('%Y%m%d') + ".txt")
+        # path = os.path.join(self.__local_target, "David.txt")
+        return luigi.LocalTarget(path)
+
+    def run(self):
 
         for the_file in os.listdir(self.__partial_files):
             file_path = os.path.join(self.__partial_files, the_file)
             try:
                 if os.path.isfile(file_path):
                     os.unlink(file_path)
-                elif os.path.isdir(file_path): shutil.rmtree(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
             except Exception as e:
                 print(e)
 
@@ -84,6 +106,7 @@ class CreateDailyFile(luigi.Task):
 
         with self.output().open('w') as f:
             f.write('Yep, done for day... and what!')
+
 
 
 if __name__ == '__main__':

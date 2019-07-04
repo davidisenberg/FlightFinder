@@ -4,4 +4,4 @@ source /usr/local/bin/virtualenvwrapper.sh
 workon myvirtualenv
 cd /home/davidisenberg/FlightFinder
 export PYTHONPATH="/home/davidisenberg/FlightFinder/tasks:/home/davidisenberg/FlightFinder/services:/home/davidisenberg/FlightFinder"
-luigi --module flight_task CreateDailyFile --local-scheduler
+luigi --module flight_task CleanUp --local-scheduler

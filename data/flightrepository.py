@@ -26,10 +26,10 @@ class FlightsRepository:
 
         return flights
 
-    def get_flights_for_dates_and_list(self, date_from, date_to, list):
+    def get_flights_for_dates(self, data_date):
         try:
             pq1 = pq.ParquetDataset(self.__flight_parquet,
-                                   filters=[('DataDate', '=', "20190615")])
+                                   filters=[('DataDate', '=', data_date)])
             flights = pq1.read().to_pandas()
             return flights
         except Exception as e:

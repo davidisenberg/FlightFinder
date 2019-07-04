@@ -19,6 +19,10 @@ class FlightService:
 
         return flights
 
+    def get_flights_for_date(self,data_date):
+        flights = FlightsRepository().get_flights_for_dates(data_date)
+        return flights
+
     def get_todays_flights(self,fly_from, fly_to, date_from, date_to):
         try:
             flights = FlightsRepository().get_todays_flights(fly_from, fly_to, date_from, date_to)
