@@ -37,7 +37,7 @@ class LoadAllFlights(luigi.Task):
        return luigi.LocalTarget(path)
 
     def run(self):
-        directs = DirectService().get_directs_list()[:3]
+        directs = DirectService().get_directs_list()
         today = datetime.date.today()
 
         FLY_FROM = 0
