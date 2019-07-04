@@ -17,13 +17,13 @@ class LoadFlight(luigi.Task):
 
     def output(self):
         name = "" + self.fly_from + "_" + self.fly_to
-        path = os.path.join(self.__local_target,"Data_ " + name)
+        path = os.path.join(self.__local_target,"Data_" + name)
         return luigi.LocalTarget(path)
 
     def run(self):
         if self.fly_from != 'LEH' and self.fly_to == 'LEH':
             time.sleep(.100)
-            FlightService().add_one_flight_for_year(self.fly_from,self.fly_to)
+        FlightService().add_one_flight_for_year(self.fly_from,self.fly_to)
         with self.output().open('w') as f:
             f.write('%s' % self.fly_from)
 
