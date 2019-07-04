@@ -127,7 +127,7 @@ class FlightsRepository:
         except Exception as e:
             print(e)
 
-    def get_partial_flights(self, data_date):
+    def get_partial_flights(self):
         try:
             pq1 = pq.ParquetDataset(self.__flight_partial_parquet)
             flights: pd.DataFrame = pd.DataFrame()
