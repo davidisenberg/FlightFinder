@@ -7,6 +7,8 @@ from services.core.directsservice import DirectService
 from services.core.flightservice import FlightService
 from services.core.recoservice_df import RecommendationService
 from flask import render_template
+from model.flight import Flight
+import pandas as pd
 import json
 import datetime
 
@@ -48,6 +50,28 @@ def get_recommendations():
     except Exception as e:
         return json.dumps(e)
 
+@app.route('/recostemp',methods=['POST'])
+def get_sample_recommendations():
+    print("hello")
+    print("yes yes")
+    input = json.loads(request.data)
+    fly_from = [input["flyFrom"]]
+    fly_to = [input["flyTo"]]
+    date_from = input["dateFrom"]
+    date_to = input["dateTo"]
+    exclusions = []
+
+    flights = get_flights_temp()
+    paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 2, 10)
+    list_of_paths = []
+    for path in paths:
+        list_of_flights = []
+        for flights in path:
+            list_of_flights.append(flights.to_dict())
+        list_of_paths.append(list_of_flights)
+    list_of_paths = json.dumps(list_of_paths, default=datetime_handler)
+    return list_of_paths
+
 
 def get_recommendations(fly_from, fly_to, date_from, date_to, exclusions):
     print("hello")
@@ -83,7 +107,6 @@ def get_directs():
 
     return json.dumps([ob.__dict__ for ob in directs])
 
-'''
 def get_flights_temp():
     f1 = Flight("JFK", "LHR", 1000, "DU", "", datetime.datetime(2019, 5, 10, 11, 0, 0),
                 datetime.datetime(2019, 5, 10, 6, 0, 0), "123")
@@ -106,7 +129,6 @@ def get_flights_temp():
     fs = [f1, f2, f3, f4, f5, f6, f7, f8, f9]
     flights = pd.DataFrame.from_records([f.to_dict() for f in fs])
     return flights
-'''
 
 if __name__ == '__main__':
     app.run(port=5002)
