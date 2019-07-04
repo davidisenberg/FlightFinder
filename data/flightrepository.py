@@ -127,11 +127,9 @@ class FlightsRepository:
         except Exception as e:
             print(e)
 
-    def get_dates_flights(self, data_date):
+    def get_partial_flights(self, data_date):
         try:
-            pq1 = pq.ParquetDataset(self.__flight_partial_parquet,
-                                    filters=[('DataDate', '=',
-                                              int(data_date.strftime('%Y%m%d'))), ])
+            pq1 = pq.ParquetDataset(self.__flight_partial_parquet)
             flights: pd.DataFrame = pd.DataFrame()
             flights = flights.append(pq1.read().to_pandas())
             flights.drop_duplicates()

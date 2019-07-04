@@ -156,9 +156,9 @@ class FlightService:
                     continue
                 queue.append(direct)
 
-    def consolidate_partials(self, data_date):
+    def consolidate_partials(self):
         try:
-            flights = FlightsRepository().get_dates_flights(data_date)
+            flights = FlightsRepository().get_partial_flights()
             FlightsRepository().insert_flights(flights)
         except:
             print("consolidate_partials")
