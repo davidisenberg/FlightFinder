@@ -61,8 +61,17 @@ def get_sample_recommendations():
     date_to = input["dateTo"]
     exclusions = []
 
+    print("fly_to" + fly_to)
+
     flights = get_flights_temp()
+
+    print("here")
+
+
     paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 2, 10)
+
+    print("after recos")
+
     list_of_paths = []
     for path in paths:
         list_of_flights = []
