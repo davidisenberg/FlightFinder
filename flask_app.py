@@ -90,6 +90,9 @@ def get_sample_recommendations():
 
     paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, [], 2, 10)
 
+    if (paths == None):
+        return json.dumps('{ "result": { "error": "no data returned"} }')
+
     app.logger.info("after recos")
 
     list_of_paths = []
@@ -106,6 +109,10 @@ def get_recommendations(fly_from, fly_to, date_from, date_to, exclusions):
     print("hello")
     flights = FlightService().get_flights(date_from, date_to)
     paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 2, 10)
+
+    if (paths == None):
+        return json.loads( 'result: { error: "no data returned"}')
+
     list_of_paths = []
     for path in paths:
         list_of_flights = []

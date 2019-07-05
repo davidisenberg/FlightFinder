@@ -56,7 +56,10 @@ class RecommendationService:
                 self.process(q, current, flights, exclusions, targets, sources, days_min, days_max)
                 #for elem in list(q.queue):
                 #    print(str(elem))
+        if(df.empty):
+            return None
 
+        #path = df.sort_values(by=['price'])["current_path"].to_list()# paths = df["current_path"].to_list()
         path = df.sort_values(by=['price'])["current_path"].to_list()# paths = df["current_path"].to_list()
         return path
 
