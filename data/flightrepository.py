@@ -38,34 +38,34 @@ class FlightsRepository:
 
         return flights
 
-
-
     def get_latest_flights(self, date_from, date_to):
         try:
 
+            self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
             pq1 = pq.ParquetDataset(self.__flight_parquet,
-                                     filters=[('DataDate', '=',
-                                               int(datetime.date.today().strftime('%Y%m%d'))), ])
+                                      filters=[('DataDate', '=',
+                                                int(datetime.date.today().strftime('%Y%m%d'))) ])
+
 
             pq2 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
                                               int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
-                                                  '%Y%m%d'))), ])
+                                                  '%Y%m%d')))])
 
             pq3 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
-                                              int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
-                                                  '%Y%m%d'))), ])
+                                              int((datetime.date.today() + datetime.timedelta(days=-2)).strftime(
+                                                  '%Y%m%d')))])
 
             pq4 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
-                                              int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
-                                                  '%Y%m%d'))), ])
+                                              int((datetime.date.today() + datetime.timedelta(days=-3)).strftime(
+                                                  '%Y%m%d')))])
 
             pq5 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
-                                              int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
-                                                  '%Y%m%d'))), ])
+                                              int((datetime.date.today() + datetime.timedelta(days=-4)).strftime(
+                                                  '%Y%m%d')))])
 
             '''
             pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
@@ -80,23 +80,25 @@ class FlightsRepository:
              '''
             flights: pd.DataFrame = pd.DataFrame()
             if len(pq1.pieces) > 0:
-                flights = flights.append(pq1.read().to_pandas())
+                flights = flights.append(pq1.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
             if len(pq2.pieces) > 0:
-                flights = flights.app(pq2.read().to_pandas())
+                flights = flights.append(pq2.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
             if len(pq3.pieces) > 0:
-                flights = flights.append(pq3.read().to_pandas())
+                flights = flights.append(pq3.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
             if len(pq4.pieces) > 0:
-                flights = flights.app(pq4.read().to_pandas())
+                flights = flights.append(pq4.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
             if len(pq5.pieces) > 0:
-                flights = flights.app(pq5.read().to_pandas())
+                flights = flights.append(pq5.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
 
-            flights.drop_duplicates()
+            flights = flights[(flights['DepartTimeUTC'] >= pd.Timestamp(date_from)) &
+                              (flights['DepartTimeUTC'] <= pd.Timestamp(date_to)) ]
+
+            # way too slow
+            # flights.drop_duplicates()
 
             if (len(flights) == 0):
                 return pd.DataFrame()
 
-            flights = flights[(flights['DepartTimeUTC'] >= pd.Timestamp(date_from)) &
-                              (flights['DepartTimeUTC'] <= pd.Timestamp(date_to)) ]
         except Exception as e:
             print(e)
             flights = pd.DataFrame()

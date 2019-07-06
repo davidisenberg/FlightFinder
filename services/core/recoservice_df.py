@@ -3,6 +3,7 @@ from enum import Enum
 import datetime
 import pandas as pd
 import decimal
+import time
 
 class FlightState(Enum):
     at_source = 0
@@ -45,7 +46,10 @@ class FlightItem:
 
 class RecommendationService:
 
+    __cache: dict = {}
+
     def get_recommendations(self, flights, sources, targets, exclusions, days_min, days_max):
+        start = time.time()
         q: queue.Queue = self.get_initial_queue(sources)
         df: pd.DataFrame = pd.DataFrame()
         while not q.empty():
@@ -61,6 +65,10 @@ class RecommendationService:
 
         #path = df.sort_values(by=['price'])["current_path"].to_list()# paths = df["current_path"].to_list()
         path = df.sort_values(by=['price'])["current_path"].to_list()# paths = df["current_path"].to_list()
+
+        end = time.time()
+        print("total time: " + str(end-start))
+
         return path
 
 
@@ -82,49 +90,119 @@ class RecommendationService:
             q.put_nowait(FlightItem(source, [], FlightState.at_source,0))
         return q
 
+    def get_flights_from_cache(self, fs, loc_from, loc_to_list):
+
+        from_key = loc_from
+        from_to_key = loc_from + "|" + ''.join(loc_to_list)
+        if from_to_key in self.__cache:
+            f1 = self.__cache[from_to_key]
+        elif loc_from in self.__cache:
+            f1 = self.__cache[loc_from]
+            f1 = f1[f1["FlyTo"].isin(loc_to_list)]
+            #print('adding to cache: ' + from_to_key + str(f1.shape))
+            self.__cache[from_to_key] = f1
+        else:
+            f1 = fs[fs["FlyFrom"].isin([loc_from])]
+            self.__cache[from_key] = f1
+            #print('adding to cache: ' + from_key + str(f1.shape))
+            f1 = f1[f1["FlyTo"].isin(loc_to_list)]
+            self.__cache[from_to_key] = f1
+            #print('adding to cache: ' + from_to_key + str(f1.shape))
+        return f1
+
+
     def update_queue_at_source(self, q, current, flight_df, exclusions, targets, sources):
+        start = time.time()
         fs = flight_df
         int_destinations = fs[fs["FlyTo"].isin(targets)]["FlyFrom"].unique()
-        f1 = fs[(fs["FlyFrom"] == current.current_loc) &
-                (~fs["FlyTo"].isin(exclusions)) &
-                ((fs["FlyTo"].isin(int_destinations)) | (fs["FlyTo"].isin(targets)))]
+        f1 = fs[(fs["FlyFrom"].isin([current.current_loc]))]
+        f1 = f1[~f1["FlyTo"].isin(exclusions)]
+        f1 = f1[(f1["FlyTo"].isin(int_destinations)) | (f1["FlyTo"].isin(targets))]
+
         f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
         self.add_to_queue(q, current, f1, targets, sources)
+        end = time.time()
+        #print("Source Total:" + str(end - start))
 
 
     def update_queue_at_first_intermediate(self, q, current: FlightItem, flight_df, targets, sources, days_min, days_max):
+        start = time.time()
         prev_arrival_time = current.get_prev_arrival_time()
+        day1 = prev_arrival_time + datetime.timedelta(days=days_min)
+        day2 = prev_arrival_time + datetime.timedelta(days=days_max)
         fs = flight_df
-        f1 = fs[(fs["FlyFrom"] == current.current_loc) &
-                (fs["FlyTo"].isin(targets)) &
-                (fs["DepartTimeUTC"] > prev_arrival_time + datetime.timedelta(days=days_min)) &
-                (fs["DepartTimeUTC"] < prev_arrival_time + datetime.timedelta(days=days_max))]
+
+        f1 = self.get_flights_from_cache(fs, current.current_loc, targets)
+        f1 = f1[f1["DepartTimeUTC"] > day1]
+        f1 = f1[f1["DepartTimeUTC"] < day2]
         f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
         self.add_to_queue(q, current, f1, targets, sources)
+        end = time.time()
+        #print("at first intermediate:" + str(end - start))
 
     def update_queue_at_target(self, q, current: FlightItem, flight_df, exclusions, targets, sources,
                                days_min, days_max):
+        start = time.time()
         fs = flight_df
         prev_arrival_time = current.get_prev_arrival_time()
+        day1 = prev_arrival_time + datetime.timedelta(days=days_min)
+        day2 = prev_arrival_time + datetime.timedelta(days=days_max)
         int_destinations = fs[fs["FlyFrom"].isin(targets)]["FlyTo"].unique()
-        f1 = fs[(fs["FlyFrom"] == current.current_loc) &
-                (fs["DepartTimeUTC"] > prev_arrival_time + datetime.timedelta(days=days_min)) &
-                (fs["DepartTimeUTC"] < prev_arrival_time + datetime.timedelta(days=days_max)) &
-                (~fs["FlyTo"].isin(exclusions)) &
-                ((fs["FlyTo"].isin(int_destinations)) | (fs["FlyTo"].isin(sources)))]
+
+        if current.current_loc in self.__cache:
+            f1 = self.__cache[current.current_loc]
+            #print("target cache hit" + str(f1.shape) + current.current_loc)
+
+        else:
+            f1 = fs[fs["FlyFrom"].isin([current.current_loc])]
+            self.__cache[current.current_loc] = f1
+
+        #f1 = fs[fs["FlyFrom"].isin([current.current_loc])]
+        f1 = f1[(f1["FlyTo"].isin(int_destinations)) | (f1["FlyTo"].isin(sources))]
+        f1 = f1[~f1["FlyTo"].isin(exclusions)]
+        f1 = f1[f1["DepartTimeUTC"] > day1]
+        f1 = f1[f1["DepartTimeUTC"] < day2]
         f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
         self.add_to_queue(q, current, f1, targets, sources)
+        end = time.time()
+        #print("at target:" + str(end - start))
 
     def update_queue_at_second_intermediate(self, q, current: FlightItem, flight_df, targets, sources, days_min, days_max):
 
+        start = time.time()
         prev_arrival_time = current.get_prev_arrival_time()
-        fs = flight_df
-        f1 = fs[(fs["FlyFrom"] == current.current_loc) & (fs["FlyTo"].isin(sources)) &
-                (fs["DepartTimeUTC"] > prev_arrival_time + datetime.timedelta(days=days_min)) &
-                (fs["DepartTimeUTC"] < prev_arrival_time + datetime.timedelta(days=days_max))]
-        f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
+
+        if current.current_loc.join(sources) + str(prev_arrival_time) in self.__cache:
+            #print("big hit")
+            f1 = self.__cache[current.current_loc.join(sources) + str(prev_arrival_time)]
+        else:
+            fs = flight_df
+            day1 = prev_arrival_time + datetime.timedelta(days=days_min)
+            day2 = prev_arrival_time + datetime.timedelta(days=days_max)
+
+            # if current.current_loc.join(sources) in self.__cache:
+            #     print("from to hit")
+            #     f1 = self.__cache[current.current_loc.join(sources)]
+            # elif current.current_loc in self.__cache:
+            #     f1 = self.__cache[current.current_loc]
+            #     f1 = f1[f1["FlyTo"].isin(sources)]
+            #     self.__cache[current.current_loc.join(sources)] = f1
+            # else:
+            #     f1 = fs[fs["FlyFrom"].isin([current.current_loc])]
+            #     self.__cache[current.current_loc] = f1
+            #     f1 = f1[f1["FlyTo"].isin(sources)]
+            #     self.__cache[current.current_loc.join(sources)] = f1
+            f1 = self.get_flights_from_cache(fs, current.current_loc,sources)
+
+            f1 = f1[f1["DepartTimeUTC"] > day1]
+            f1 = f1[f1["DepartTimeUTC"] < day2]
+            f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
+            self.__cache[current.current_loc.join(sources) + str(prev_arrival_time)] = f1
+
 
         self.add_to_queue(q, current, f1, targets, sources)
+        end = time.time()
+        #print("second intermediate: " + current.current_loc + " " + str(end - start))
 
     def get_top_results(self, df):
         return df
@@ -152,9 +230,13 @@ class RecommendationService:
 
 
 if __name__ == "__main__":
+    start = time.time()
     from services.core.flightservice import FlightService
     flights = FlightService().get_flights(datetime.date(2019,8,1), datetime.date(2019,9,30))
     paths = RecommendationService().get_recommendations(flights, ["JFK", "EWR"], ["LHR"], [], 2, 10)
+    end = time.time()
+    print("really total time: " + str(end - start))
+    print("count: " + str(len(paths)))
     paths
 
     # test one
