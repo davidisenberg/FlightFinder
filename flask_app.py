@@ -55,6 +55,8 @@ def get_recommendations():
         print("yes yes")
         input = json.loads(request.data)
         flyFrom = [input["flyFrom"]]
+        if flyFrom == 'NYC':
+            flyFrom = ["JFK", "EWR", "LGA"]
         flyTo = [input["flyTo"]]
         dateFrom = input["dateFrom"]
         dateTo = input["dateTo"]
@@ -111,7 +113,7 @@ def get_recommendations(fly_from, fly_to, date_from, date_to, exclusions):
     paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 2, 10)
 
     if (paths == None):
-        return json.loads( 'result: { error: "no data returned"}')
+        return json.dumps('{ "result": { "error": "no data returned"} }')
 
     list_of_paths = []
     for path in paths:

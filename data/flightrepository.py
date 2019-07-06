@@ -44,13 +44,29 @@ class FlightsRepository:
         try:
 
             pq1 = pq.ParquetDataset(self.__flight_parquet,
-                                    filters=[('DataDate', '=',
-                                              int(datetime.date.today().strftime('%Y%m%d'))), ])
+                                     filters=[('DataDate', '=',
+                                               int(datetime.date.today().strftime('%Y%m%d'))), ])
 
             pq2 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
                                               int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
                                                   '%Y%m%d'))), ])
+
+            pq3 = pq.ParquetDataset(self.__flight_parquet,
+                                    filters=[('DataDate', '=',
+                                              int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
+                                                  '%Y%m%d'))), ])
+
+            pq4 = pq.ParquetDataset(self.__flight_parquet,
+                                    filters=[('DataDate', '=',
+                                              int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
+                                                  '%Y%m%d'))), ])
+
+            pq5 = pq.ParquetDataset(self.__flight_parquet,
+                                    filters=[('DataDate', '=',
+                                              int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
+                                                  '%Y%m%d'))), ])
+
             '''
             pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
                                     filters=[('DataDate', '=',
@@ -67,6 +83,13 @@ class FlightsRepository:
                 flights = flights.append(pq1.read().to_pandas())
             if len(pq2.pieces) > 0:
                 flights = flights.app(pq2.read().to_pandas())
+            if len(pq3.pieces) > 0:
+                flights = flights.append(pq3.read().to_pandas())
+            if len(pq4.pieces) > 0:
+                flights = flights.app(pq4.read().to_pandas())
+            if len(pq5.pieces) > 0:
+                flights = flights.app(pq5.read().to_pandas())
+
             flights.drop_duplicates()
 
             if (len(flights) == 0):

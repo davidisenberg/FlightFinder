@@ -152,34 +152,40 @@ class RecommendationService:
 
 
 if __name__ == "__main__":
-    from model.flight import Flight
-
-    f1 = Flight("JFK", "LHR", 1000, "DU", "", datetime.datetime(2019, 5, 10, 11, 0, 0),
-                datetime.datetime(2019, 5, 10, 6, 0, 0), "123", datetime.date.today())
-    f2 = Flight("JFK", "MIA", 50, "DU", "", datetime.datetime(2019, 5, 5, 11, 0, 0),
-                datetime.datetime(2019, 5, 5, 6, 0, 0), "456", datetime.date.today())
-    f3 = Flight("MIA", "LHR", 100, "DU", "", datetime.datetime(2019, 5, 8, 11, 0, 0),
-                datetime.datetime(2019, 5, 8, 6, 0, 0), "456", datetime.date.today())
-    f4 = Flight("LHR", "EWR", 450, "DU", "", datetime.datetime(2019, 5, 18, 11, 0, 0),
-                datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today())
-    f5 = Flight("LHR", "ATL", 200, "DU", "", datetime.datetime(2019, 5, 14, 11, 0, 0),
-                datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today())
-    f6 = Flight("ATL", "JFK", 300, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0),
-                datetime.datetime(2019, 5, 20, 6, 0, 0), "123", datetime.date.today())
-    f7 = Flight("EWR", "LHR", 1200, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0),
-                datetime.datetime(2019, 5, 16, 6, 0, 0), "123", datetime.date.today())
-    f8 = Flight("JFK", "LHR", 1200, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0),  # dup of f1 but higher price
-                datetime.datetime(2019, 5, 16, 6, 0, 0), "123", datetime.date.today())
-    f9 = Flight("JFK", "LHR", 5, "DU", "", datetime.datetime(2019, 5, 10, 11, 0, 0),  # dup of f1 but on same day
-                datetime.datetime(2019, 5, 10, 6, 0, 0), "123", datetime.date.today())
-    ffs = [f1, f2, f3, f4, f5, f6, f7, f8, f9]
-    flights = pd.DataFrame.from_records([f.to_dict() for f in ffs])
-    df = pd.DataFrame()
-
-    sources = ["JFK", "EWR"]
-    targets = ["LHR"]
-    exclusions = []
-
-    df = pd.DataFrame()
+    from services.core.flightservice import FlightService
+    flights = FlightService().get_flights(datetime.date(2019,8,1), datetime.date(2019,9,30))
     paths = RecommendationService().get_recommendations(flights, ["JFK", "EWR"], ["LHR"], [], 2, 10)
     paths
+
+    # test one
+    # from model.flight import Flight
+    #
+    # f1 = Flight("JFK", "LHR", 1000, "DU", "", datetime.datetime(2019, 5, 10, 11, 0, 0),
+    #             datetime.datetime(2019, 5, 10, 6, 0, 0), "123", datetime.date.today())
+    # f2 = Flight("JFK", "MIA", 50, "DU", "", datetime.datetime(2019, 5, 5, 11, 0, 0),
+    #             datetime.datetime(2019, 5, 5, 6, 0, 0), "456", datetime.date.today())
+    # f3 = Flight("MIA", "LHR", 100, "DU", "", datetime.datetime(2019, 5, 8, 11, 0, 0),
+    #             datetime.datetime(2019, 5, 8, 6, 0, 0), "456", datetime.date.today())
+    # f4 = Flight("LHR", "EWR", 450, "DU", "", datetime.datetime(2019, 5, 18, 11, 0, 0),
+    #             datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today())
+    # f5 = Flight("LHR", "ATL", 200, "DU", "", datetime.datetime(2019, 5, 14, 11, 0, 0),
+    #             datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today())
+    # f6 = Flight("ATL", "JFK", 300, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0),
+    #             datetime.datetime(2019, 5, 20, 6, 0, 0), "123", datetime.date.today())
+    # f7 = Flight("EWR", "LHR", 1200, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0),
+    #             datetime.datetime(2019, 5, 16, 6, 0, 0), "123", datetime.date.today())
+    # f8 = Flight("JFK", "LHR", 1200, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0),  # dup of f1 but higher price
+    #             datetime.datetime(2019, 5, 16, 6, 0, 0), "123", datetime.date.today())
+    # f9 = Flight("JFK", "LHR", 5, "DU", "", datetime.datetime(2019, 5, 10, 11, 0, 0),  # dup of f1 but on same day
+    #             datetime.datetime(2019, 5, 10, 6, 0, 0), "123", datetime.date.today())
+    # ffs = [f1, f2, f3, f4, f5, f6, f7, f8, f9]
+    # flights = pd.DataFrame.from_records([f.to_dict() for f in ffs])
+    # df = pd.DataFrame()
+    #
+    # sources = ["JFK", "EWR"]
+    # targets = ["LHR"]
+    # exclusions = []
+    #
+    # df = pd.DataFrame()
+    # paths = RecommendationService().get_recommendations(flights, ["JFK", "EWR"], ["LHR"], [], 2, 10)
+    # paths
