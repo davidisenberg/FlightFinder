@@ -32,9 +32,9 @@ def get_main():
     app.logger.info('testing info log')
     return "hello David"
 
-@app.route('/')
-def get_ui():
-    return render_template('index.html')
+# @app.route('/')
+# def get_ui():
+#     return render_template('index.html')
 
 def datetime_handler(x):
     if isinstance(x, datetime.datetime):
