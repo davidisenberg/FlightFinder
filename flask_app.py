@@ -55,12 +55,18 @@ def get_recommendations():
         print("yes yes")
         input = json.loads(request.data)
         flyFrom = [input["flyFrom"]]
-        if flyFrom == 'NYC':
+        if flyFrom == ['NYC']:
             flyFrom = ["JFK", "EWR", "LGA"]
         flyTo = [input["flyTo"]]
         dateFrom = input["dateFrom"]
         dateTo = input["dateTo"]
         exclusions = []
+
+        app.logger.info(input)
+        app.logger.info(flyFrom)
+        app.logger.info(flyTo)
+        app.logger.info(dateFrom)
+        app.logger.info(dateTo)
 
         return get_recommendations(flyFrom, flyTo, dateFrom, dateTo, exclusions)
     except Exception as e:
@@ -110,8 +116,10 @@ def get_sample_recommendations():
 def get_recommendations(fly_from, fly_to, date_from, date_to, exclusions):
     print("hello")
     flights = FlightService().get_flights(date_from, date_to)
+    app.logger.info(flights.shape)
     paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 2, 10)
 
+    app.logger.info(flights.shape)
     if (paths == None):
         return json.dumps('{ "result": { "error": "no data returned"} }')
 

@@ -49,6 +49,8 @@ class RecommendationService:
     __cache: dict = {}
 
     def get_recommendations(self, flights, sources, targets, exclusions, days_min, days_max):
+
+        #print("in reccomendations")
         start = time.time()
         q: queue.Queue = self.get_initial_queue(sources)
         df: pd.DataFrame = pd.DataFrame()
@@ -63,7 +65,9 @@ class RecommendationService:
         if(df.empty):
             return None
 
-        #path = df.sort_values(by=['price'])["current_path"].to_list()# paths = df["current_path"].to_list()
+        #path = df.sort_values(by=['price'])
+        #path.to_csv(''.join(sources) + "_" + ''.join(targets) + ".csv")
+
         path = df.sort_values(by=['price'])["current_path"].to_list()# paths = df["current_path"].to_list()
 
         end = time.time()
@@ -232,8 +236,8 @@ class RecommendationService:
 if __name__ == "__main__":
     start = time.time()
     from services.core.flightservice import FlightService
-    flights = FlightService().get_flights(datetime.date(2019,8,1), datetime.date(2019,9,30))
-    paths = RecommendationService().get_recommendations(flights, ["JFK", "EWR"], ["LHR"], [], 2, 10)
+    flights = FlightService().get_flights(datetime.date(2019,8,1), datetime.date(2019,9,15))
+    paths = RecommendationService().get_recommendations(flights, ["JFK", "EWR","LGA"], ["YYC"], [], 2, 10)
     end = time.time()
     print("really total time: " + str(end - start))
     print("count: " + str(len(paths)))
