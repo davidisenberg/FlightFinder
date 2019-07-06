@@ -1,0 +1,11 @@
+what
+hello world
+__main__
+ * Serving Flask app "flask_app" (lazy loading)
+ * Environment: development
+ * Debug mode: on
+what
+hello world
+__main__
+what
+hello world
