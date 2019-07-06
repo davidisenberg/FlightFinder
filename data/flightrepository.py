@@ -41,7 +41,7 @@ class FlightsRepository:
     def get_latest_flights(self, date_from, date_to):
         try:
 
-            self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
+            #self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
             pq1 = pq.ParquetDataset(self.__flight_parquet,
                                       filters=[('DataDate', '=',
                                                 int(datetime.date.today().strftime('%Y%m%d'))) ])
