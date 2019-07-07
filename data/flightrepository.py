@@ -95,6 +95,7 @@ class FlightsRepository:
 
             # way too slow
             flights.drop_duplicates()
+            flights.reset_index()
 
             if (len(flights) == 0):
                 return pd.DataFrame()
