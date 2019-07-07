@@ -236,7 +236,7 @@ if __name__ == "__main__":
     start = time.time()
     from services.core.flightservice import FlightService
     flights = FlightService().get_flights(datetime.date(2019,8,1), datetime.date(2019,9,15))
-    paths = RecommendationService().get_recommendations(flights, ["JFK", "EWR","LGA"], ["YYC"], [], 2, 10)
+    paths = RecommendationService().get_recommendations(flights, ["JFK", "EWR","LGA"], ["CTG"], [], 2, 10)
     end = time.time()
     print("really total time: " + str(end - start))
     print("count: " + str(len(paths)))
