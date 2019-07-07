@@ -172,6 +172,8 @@ class FlightService:
             raise
 
 
+if __name__ == "__main__":
+    FlightService().consolidate_partials()
 
 #list = FlightService().get_flights_from_list([("JFK","LHR"),("LHR","JFK")],datetime.date(2019,6,1), datetime.date(2019,6,30))
 #list
