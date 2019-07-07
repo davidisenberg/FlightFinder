@@ -160,16 +160,13 @@ class FlightsRepository:
             flights.drop_duplicates()
 
             if (len(flights) == 0):
-                return pd.DataFrame()
+                raise Exception("There are no flights in this partial parquet file. I cannot allow this.")
 
             return flights
         except Exception as e:
             print(e)
-            flights = pd.DataFrame()
+            raise
 
-
-        except Exception as e:
-            print(e)
 
 
 

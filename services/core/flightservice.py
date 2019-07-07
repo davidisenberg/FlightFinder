@@ -163,7 +163,10 @@ class FlightService:
     def consolidate_partials(self):
         try:
             flights = FlightsRepository().get_partial_flights()
-            FlightsRepository().insert_flights(flights)
+            if (flights.count()[0] > 2):
+                FlightsRepository().insert_flights(flights)
+            else:
+                print("Failure to get partial flights")
         except:
             print("consolidate_partials")
             raise
