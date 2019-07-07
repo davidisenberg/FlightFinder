@@ -94,7 +94,7 @@ class FlightsRepository:
                               (flights['DepartTimeUTC'] <= pd.Timestamp(date_to)) ]
 
             # way too slow
-            # flights.drop_duplicates()
+            flights.drop_duplicates()
 
             if (len(flights) == 0):
                 return pd.DataFrame()
