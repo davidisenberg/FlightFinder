@@ -44,7 +44,7 @@ class FlightsRepository:
 
             #self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
             start = time.time()
-            pq1 : pq.ParquetDataset
+            pq1 = pq.ParquetDataset()
             index = 0
             while pq1.pieces == 0 and index < 5:
                 pq1 = pq.ParquetDataset(self.__flight_parquet,
