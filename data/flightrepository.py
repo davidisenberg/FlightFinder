@@ -80,15 +80,15 @@ class FlightsRepository:
              '''
             flights: pd.DataFrame = pd.DataFrame()
             if len(pq1.pieces) > 0:
-                flights = flights.append(pq1.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
+                flights = flights.concat(pq1.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas(), ignore_index=True)
             if len(pq2.pieces) > 0:
-                flights = flights.append(pq2.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
+                flights = flights.concat(pq2.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas(), ignore_index=True)
             if len(pq3.pieces) > 0:
-                flights = flights.append(pq3.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
+                flights = flights.concat(pq3.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas(), ignore_index=True)
             if len(pq4.pieces) > 0:
-                flights = flights.append(pq4.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
+                flights = flights.concat(pq4.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas(), ignore_index=True)
             if len(pq5.pieces) > 0:
-                flights = flights.append(pq5.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
+                flights = flights.concat(pq5.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas(), ignore_index=True)
 
             flights = flights[(flights['DepartTimeUTC'] >= pd.Timestamp(date_from)) &
                               (flights['DepartTimeUTC'] <= pd.Timestamp(date_to)) ]
