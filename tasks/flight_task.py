@@ -97,6 +97,8 @@ class CleanUp(luigi.Task):
                 print(e)
 
         for the_file in os.listdir(self.__local_target):
+            if the_file.startswith("20"):
+                continue
             file_path = os.path.join(self.__local_target, the_file)
             try:
                 if os.path.isfile(file_path):
