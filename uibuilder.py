@@ -72,7 +72,7 @@ if __name__ == "__main__":
     print("complete")
 
     print("")
-    print("Hopefully you ran 'npm run-scripts build' before this script")
+    print("Now, maybe you need to 'git add' the static folder. But commit, push, pull from remote, and restart the webserver.")
 
 
 
