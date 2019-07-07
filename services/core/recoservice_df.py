@@ -194,7 +194,8 @@ class RecommendationService:
             end = time.time()
             print("second intermediate: " + current.current_loc + " " + str(end - start))
         except Exception as e:
-            print("Excpetion" + str(e))
+            print("Exception: " + str(e))
+            f1.to_csv("error.csv")
             f1.info(verbose=True)
             raise
 
