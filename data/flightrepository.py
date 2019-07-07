@@ -49,7 +49,7 @@ class FlightsRepository:
                                               int((datetime.date.today()).strftime(
                                                   '%Y%m%d')))])
             index = 1
-            while pq1.pieces == 0 and index < 5:
+            while len(pq1.pieces) == 0 and index < 5:
                 pq1 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
                                               int((datetime.date.today() + datetime.timedelta(days=-index)).strftime(
