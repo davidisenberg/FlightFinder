@@ -23,7 +23,7 @@ class EntryForm extends React.Component {
       endDate: null,
       focusedInput: null,
       flyFrom: "NYC",
-      flyTo: "LHR"
+      flyTo: "CTG"
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -34,6 +34,8 @@ class EntryForm extends React.Component {
   async handleSubmit(event) {
     console.log("form submit");
     event.preventDefault();
+
+    this.props.callback("loading");
 
     let dtFrom = new Date(this.state.startDate).toISOString().substring(0, 10);
     let dtTo = new Date(this.state.endDate).toISOString().substring(0, 10);
