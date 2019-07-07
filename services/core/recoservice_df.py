@@ -142,7 +142,7 @@ class RecommendationService:
         f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
         self.add_to_queue(q, current, f1, targets, sources)
         end = time.time()
-        #print("at first intermediate:" + str(end - start))
+        print("at first intermediate:" + str(end - start))
 
     def update_queue_at_target(self, q, current: FlightItem, flight_df, exclusions, targets, sources,
                                days_min, days_max):
@@ -169,7 +169,7 @@ class RecommendationService:
         f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
         self.add_to_queue(q, current, f1, targets, sources)
         end = time.time()
-        #print("at target:" + str(end - start))
+        print("at target:" + str(end - start))
 
     def update_queue_at_second_intermediate(self, q, current: FlightItem, flight_df, targets, sources, days_min, days_max):
 
@@ -200,13 +200,12 @@ class RecommendationService:
 
             f1 = f1[f1["DepartTimeUTC"] > day1]
             f1 = f1[f1["DepartTimeUTC"] < day2]
-            f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
             self.__cache[current.current_loc.join(sources) + str(prev_arrival_time)] = f1
 
-
+        f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
         self.add_to_queue(q, current, f1, targets, sources)
         end = time.time()
-        #print("second intermediate: " + current.current_loc + " " + str(end - start))
+        print("second intermediate: " + current.current_loc + " " + str(end - start))
 
     def get_top_results(self, df):
         return df
