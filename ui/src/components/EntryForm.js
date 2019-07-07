@@ -36,6 +36,7 @@ class EntryForm extends React.Component {
     event.preventDefault();
 
     this.props.callback("loading");
+    this.btn.setAttribute("disabled", "disabled");
 
     let dtFrom = new Date(this.state.startDate).toISOString().substring(0, 10);
     let dtTo = new Date(this.state.endDate).toISOString().substring(0, 10);
@@ -64,6 +65,7 @@ class EntryForm extends React.Component {
     console.log(json);
 
     this.props.callback(json);
+    this.btn.removeAttribute("disabled");
   }
 
   handleInputChange(event) {
@@ -160,7 +162,13 @@ class EntryForm extends React.Component {
                             </Form.Group>
                           </Col>
                         </Form.Row>
-                        <Button variant="primary" type="submit">
+                        <Button
+                          variant="primary"
+                          type="submit"
+                          ref={btn => {
+                            this.btn = btn;
+                          }}
+                        >
                           Submit
                         </Button>
                       </Form>
