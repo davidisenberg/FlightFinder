@@ -42,53 +42,17 @@ class FlightsRepository:
         try:
 
             #self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
-            pq1 = pq.ParquetDataset(self.__flight_parquet,
-                                      filters=[('DataDate', '=',
-                                                int(datetime.date.today().strftime('%Y%m%d'))) ])
-
-
-            pq2 = pq.ParquetDataset(self.__flight_parquet,
+            index = 0
+            while pq1.pieces == 0 and index < 5:
+                pq1 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
-                                              int((datetime.date.today() + datetime.timedelta(days=-1)).strftime(
+                                              int((datetime.date.today() + datetime.timedelta(days=-index)).strftime(
                                                   '%Y%m%d')))])
 
-            pq3 = pq.ParquetDataset(self.__flight_parquet,
-                                    filters=[('DataDate', '=',
-                                              int((datetime.date.today() + datetime.timedelta(days=-2)).strftime(
-                                                  '%Y%m%d')))])
-
-            pq4 = pq.ParquetDataset(self.__flight_parquet,
-                                    filters=[('DataDate', '=',
-                                              int((datetime.date.today() + datetime.timedelta(days=-3)).strftime(
-                                                  '%Y%m%d')))])
-
-            pq5 = pq.ParquetDataset(self.__flight_parquet,
-                                    filters=[('DataDate', '=',
-                                              int((datetime.date.today() + datetime.timedelta(days=-4)).strftime(
-                                                  '%Y%m%d')))])
-
-            '''
-            pq1 = pq.ParquetDataset(self.__root + "flights.parquet",
-                                    filters=[('DataDate', '=',
-                                          int(datetime.date(2019,5,19).strftime('%Y%m%d'))), ])
-
-            pq2 = pq.ParquetDataset(self.__root + "flights.parquet",
-                                    filters=[('DataDate', '=',
-                                              int((datetime.date(2019,5,19) + datetime.timedelta(days=-1)).strftime(
-                                                  '%Y%m%d'))), ])
-
-             '''
             flights: pd.DataFrame = pd.DataFrame()
             if len(pq1.pieces) > 0:
-                flights = flights.append(pq1.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
-            if len(pq2.pieces) > 0:
-                flights = flights.append(pq2.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
-            if len(pq3.pieces) > 0:
-                flights = flights.append(pq3.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
-            if len(pq4.pieces) > 0:
-                flights = flights.append(pq4.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
-            if len(pq5.pieces) > 0:
-                flights = flights.append(pq5.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas())
+                flights = pq1.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas()
+
 
             flights = flights[(flights['DepartTimeUTC'] >= pd.Timestamp(date_from)) &
                               (flights['DepartTimeUTC'] <= pd.Timestamp(date_to)) ]
