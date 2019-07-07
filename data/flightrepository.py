@@ -58,7 +58,7 @@ class FlightsRepository:
                               (flights['DepartTimeUTC'] <= pd.Timestamp(date_to)) ]
 
             # this could keep old flights if the times changed, and could remove different airlines flights that happenedd to be on the same day
-            flights.drop_duplicates(keep='last',inplace=True, subset=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC"])
+            #flights.drop_duplicates(keep='last',inplace=True, subset=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC"])
 
             if (len(flights) == 0):
                 return pd.DataFrame()
