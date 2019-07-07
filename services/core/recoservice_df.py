@@ -173,39 +173,30 @@ class RecommendationService:
 
     def update_queue_at_second_intermediate(self, q, current: FlightItem, flight_df, targets, sources, days_min, days_max):
 
-        start = time.time()
-        prev_arrival_time = current.get_prev_arrival_time()
+        try:
+            start = time.time()
+            prev_arrival_time = current.get_prev_arrival_time()
 
-        if current.current_loc.join(sources) + str(prev_arrival_time) in self.__cache:
-            #print("big hit")
-            f1 = self.__cache[current.current_loc.join(sources) + str(prev_arrival_time)]
-        else:
-            fs = flight_df
-            day1 = prev_arrival_time + datetime.timedelta(days=days_min)
-            day2 = prev_arrival_time + datetime.timedelta(days=days_max)
+            if current.current_loc.join(sources) + str(prev_arrival_time) in self.__cache:
+                #print("big hit")
+                f1 = self.__cache[current.current_loc.join(sources) + str(prev_arrival_time)]
+            else:
+                fs = flight_df
+                day1 = prev_arrival_time + datetime.timedelta(days=days_min)
+                day2 = prev_arrival_time + datetime.timedelta(days=days_max)
+                f1 = self.get_flights_from_cache(fs, current.current_loc,sources)
+                f1 = f1[f1["DepartTimeUTC"] > day1]
+                f1 = f1[f1["DepartTimeUTC"] < day2]
+                self.__cache[current.current_loc.join(sources) + str(prev_arrival_time)] = f1
 
-            # if current.current_loc.join(sources) in self.__cache:
-            #     print("from to hit")
-            #     f1 = self.__cache[current.current_loc.join(sources)]
-            # elif current.current_loc in self.__cache:
-            #     f1 = self.__cache[current.current_loc]
-            #     f1 = f1[f1["FlyTo"].isin(sources)]
-            #     self.__cache[current.current_loc.join(sources)] = f1
-            # else:
-            #     f1 = fs[fs["FlyFrom"].isin([current.current_loc])]
-            #     self.__cache[current.current_loc] = f1
-            #     f1 = f1[f1["FlyTo"].isin(sources)]
-            #     self.__cache[current.current_loc.join(sources)] = f1
-            f1 = self.get_flights_from_cache(fs, current.current_loc,sources)
-
-            f1 = f1[f1["DepartTimeUTC"] > day1]
-            f1 = f1[f1["DepartTimeUTC"] < day2]
-            self.__cache[current.current_loc.join(sources) + str(prev_arrival_time)] = f1
-
-        f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
-        self.add_to_queue(q, current, f1, targets, sources)
-        end = time.time()
-        print("second intermediate: " + current.current_loc + " " + str(end - start))
+            f1 = f1.assign(rn=f1.sort_values(['Price']).groupby(['FlyTo']).cumcount() + 1).query('rn < 2')
+            self.add_to_queue(q, current, f1, targets, sources)
+            end = time.time()
+            print("second intermediate: " + current.current_loc + " " + str(end - start))
+        except Exception as e:
+            print("Excpetion" + str(e))
+            f1.info(verbose=True)
+            raise
 
     def get_top_results(self, df):
         return df
