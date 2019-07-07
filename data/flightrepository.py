@@ -95,6 +95,9 @@ class FlightsRepository:
 
             # way too slow
             flights.drop_duplicates()
+            
+            # why do we do this you might ask. Well, 3 hours of debugging tell us that the concatentations above result in
+            # duplicate ids in the index which causes problems when assigning a new column in the recommendation service
             flights.reset_index()
 
             if (len(flights) == 0):
