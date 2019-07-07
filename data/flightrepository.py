@@ -6,6 +6,7 @@ import pyarrow.parquet as pq
 import pandas as pd
 import datetime
 import os
+import time
 
 class FlightsRepository:
 
@@ -42,6 +43,7 @@ class FlightsRepository:
         try:
 
             #self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
+            start = time.time()
             pq1 : pq.ParquetDataset
             index = 0
             while pq1.pieces == 0 and index < 5:
@@ -58,6 +60,8 @@ class FlightsRepository:
 
             flights = flights[(flights['DepartTimeUTC'] >= pd.Timestamp(date_from)) &
                               (flights['DepartTimeUTC'] <= pd.Timestamp(date_to)) ]
+            end = time.time()
+            print("time to get dataframe: " + str(end-start))
 
             # this could keep old flights if the times changed, and could remove different airlines flights that happenedd to be on the same day
             #flights.drop_duplicates(keep='last',inplace=True, subset=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC"])
