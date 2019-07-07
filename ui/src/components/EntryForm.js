@@ -123,7 +123,7 @@ class EntryForm extends React.Component {
                                 value={this.state.FlyTo}
                                 type="text"
                                 onChange={this.handleInputChange}
-                                placeholder="LHR"
+                                placeholder="CTG"
                               />
                             </Form.Group>
                           </Col>
