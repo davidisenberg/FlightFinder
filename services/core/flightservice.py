@@ -160,11 +160,11 @@ class FlightService:
                     continue
                 queue.append(direct)
 
-    def consolidate_partials(self):
+    def consolidate_partials_pyarrow(self):
         try:
-            flights = FlightsRepository().get_partial_flights()
-            if (flights.count()[0] > 2):
-                FlightsRepository().insert_flights(flights)
+            flights = FlightsRepository().get_partial_flights_pyarrow()
+            if (flights.num_rows > 2):
+                FlightsRepository().insert_flights_pyarrow(flights)
             else:
                 print("Failure to get partial flights")
         except:

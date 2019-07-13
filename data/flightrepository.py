@@ -155,6 +155,30 @@ class FlightsRepository:
             print(e)
             raise
 
+    def insert_flights_pyarrow(self, flight_table):
+        try:
+            pq.write_to_dataset(flight_table,
+                            root_path=self.__flight_parquet,
+                            partition_cols=['DataDate']
+                            )
+        except Exception as e:
+            print(e)
+
+    def get_partial_flights_pyarrow(self):
+        try:
+            pq1 = pq.ParquetDataset(self.__flight_partial_parquet)
+            flights = pq1.read()
+
+            if (len(flights) == 0):
+                raise Exception("There are no flights in this partial parquet file. I cannot allow this.")
+
+            return flights
+        except Exception as e:
+            print(e)
+            raise
+
+
+
 
 
 
