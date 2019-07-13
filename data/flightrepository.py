@@ -45,6 +45,7 @@ class FlightsRepository:
             #self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
 
             start = time.time()
+            print("checking directory: " + self.__flight_parquet )
             print("checking file: 'DataDate', '='," + str(int((datetime.date.today()).strftime('%Y%m%d'))))
             pq1 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
