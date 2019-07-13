@@ -63,9 +63,16 @@ class CreateDailyFile(luigi.Task):
         return luigi.LocalTarget(path)
 
     def run(self):
+        print("starting consolidating parquets")
+
         FlightService().consolidate_partials_pyarrow()
 
+        print("finished consolidating parquets, counting rows now:")
+
         count = FlightService().count_flights_at_date(datetime.date.today().strftime('%Y%m%d'))
+
+        print("row count: " + str(count))
+
         if(count > 2):
             with self.output().open('w') as f:
                 f.write('Yep, done for day... and what!')
