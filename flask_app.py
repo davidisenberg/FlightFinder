@@ -52,7 +52,7 @@ def date_handler(obj):
 @app.route('/recos',methods=['POST'])
 def get_recommendations():
     try:
-        print("yes yes")
+        print("at the reco endpoint")
         input = json.loads(request.data)
         flyFrom = [input["flyFrom"]]
         if flyFrom == ['NYC']:
@@ -60,7 +60,14 @@ def get_recommendations():
         flyTo = [input["flyTo"]]
         dateFrom = input["dateFrom"]
         dateTo = input["dateTo"]
-        exclusions = []
+
+        days_min_int1 = input["dateMinInt1"]
+        days_max_int1 = input["daysMaxInt1"]
+        days_min_target = input["daysMinTarget"]
+        days_max_target = input["daysMaxTarget"]
+        days_min_int2 = input["daysMinInt2"]
+        days_max_int2 = input["daysMaxInt2"]
+        exclusions = [input["exclusions"]]
 
         app.logger.info(input)
         app.logger.info(flyFrom)
@@ -68,7 +75,8 @@ def get_recommendations():
         app.logger.info(dateFrom)
         app.logger.info(dateTo)
 
-        return get_recommendations(flyFrom, flyTo, dateFrom, dateTo, exclusions)
+        return get_recommendations(flyFrom, flyTo, dateFrom, dateTo, exclusions, days_min_int1, days_max_int1,
+                                   days_min_target, days_max_target, days_min_int2, days_max_int2)
     except Exception as e:
         return json.dumps(e)
 
