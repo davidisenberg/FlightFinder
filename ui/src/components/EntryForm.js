@@ -35,37 +35,45 @@ class EntryForm extends React.Component {
     console.log("form submit");
     event.preventDefault();
 
-    this.props.callback("loading");
-    this.btn.setAttribute("disabled", "disabled");
+    try {
+      this.btn.setAttribute("disabled", "disabled");
+      this.props.callback("loading");      
 
-    let dtFrom = new Date(this.state.startDate).toISOString().substring(0, 10);
-    let dtTo = new Date(this.state.endDate).toISOString().substring(0, 10);
+      let dtFrom = new Date(this.state.startDate).toISOString().substring(0, 10);
+      let dtTo = new Date(this.state.endDate).toISOString().substring(0, 10);
 
-    let data = {
-      flyFrom: this.state.flyFrom,
-      flyTo: this.state.flyTo,
-      dateFrom: dtFrom,
-      dateTo: dtTo,
-      exclusions: this.state.exclusions
-    };
+      let data = {
+        flyFrom: this.state.flyFrom,
+        flyTo: this.state.flyTo,
+        dateFrom: dtFrom,
+        dateTo: dtTo,
+        exclusions: this.state.exclusions
+      };
 
-    console.log(data);
+      console.log(data);
+    
+      const response = await fetch("http://www.daveisenberg.com/recos", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
 
-    const response = await fetch("http://www.daveisenberg.com/recos", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
+      const json = await response.json();
 
-    const json = await response.json();
+      console.log(json);
 
-    console.log(json);
-
-    this.props.callback(json);
-    this.btn.removeAttribute("disabled");
+      this.props.callback(json);
+    }
+    catch(err)
+    {
+      this.props.callback("exception")
+    }
+    finally {
+      this.btn.removeAttribute("disabled");
+    }
   }
 
   handleInputChange(event) {
