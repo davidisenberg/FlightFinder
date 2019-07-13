@@ -7,7 +7,7 @@ import pandas as pd
 import datetime
 import os
 import time
-import psutil
+import gc
 
 class FlightsRepository:
 
@@ -168,6 +168,7 @@ class FlightsRepository:
 
     def insert_flights_pyarrow(self, flight_table):
         try:
+            gc.collect()
             print("writing")
             pq.write_to_dataset(flight_table,
                             root_path=self.__flight_parquet,
