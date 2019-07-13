@@ -170,10 +170,7 @@ class FlightsRepository:
         try:
             gc.collect()
             print("writing")
-            pq.write_to_dataset(flight_table,
-                            root_path=self.__flight_parquet,
-                            partition_cols=['DataDate']
-                            )
+            pq.write_table(flight_table,os.path.join(self.__flight_parquet,"DataDate=20190707","1.parquet"))
 
         except Exception as e:
             print(e)
