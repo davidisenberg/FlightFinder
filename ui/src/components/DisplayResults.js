@@ -20,7 +20,9 @@ class DisplayResults extends React.Component {
     }
 
     if (this.props.result.includes("exception"))
-      return <p>Oops, server is down, please try again later.</p>;
+      return (
+        <p>Oops... it seems the server is down, please try again later.</p>
+      );
 
     if (this.props.result.includes("error")) return <p>No paths found.</p>;
 
