@@ -46,6 +46,16 @@ class FlightsRepository:
 
             start = time.time()
             print("checking directory: " + self.__flight_parquet )
+
+            files = folders = 0
+
+            for _, dirnames, filenames in os.walk(self.__flight_parquet):
+                # ^ this idiom means "we won't be using this value"
+                files += len(filenames)
+                folders += len(dirnames)
+
+            print("{:,} files, {:,} folders".format(files, folders))
+
             print("checking file: 'DataDate', '='," + str(int((datetime.date.today()).strftime('%Y%m%d'))))
             pq1 = pq.ParquetDataset(self.__flight_parquet,
                                     filters=[('DataDate', '=',
