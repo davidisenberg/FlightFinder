@@ -37,9 +37,11 @@ class EntryForm extends React.Component {
 
     try {
       this.btn.setAttribute("disabled", "disabled");
-      this.props.callback("loading");      
+      this.props.callback("loading");
 
-      let dtFrom = new Date(this.state.startDate).toISOString().substring(0, 10);
+      let dtFrom = new Date(this.state.startDate)
+        .toISOString()
+        .substring(0, 10);
       let dtTo = new Date(this.state.endDate).toISOString().substring(0, 10);
 
       let data = {
@@ -51,8 +53,8 @@ class EntryForm extends React.Component {
       };
 
       console.log(data);
-    
-      const response = await fetch("http://www.daveisenberg.com/recos", {
+
+      const response = await fetch("http://localhost:5003/recos", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -66,12 +68,9 @@ class EntryForm extends React.Component {
       console.log(json);
 
       this.props.callback(json);
-    }
-    catch(err)
-    {
-      this.props.callback("exception")
-    }
-    finally {
+    } catch (err) {
+      this.props.callback("exception");
+    } finally {
       this.btn.removeAttribute("disabled");
     }
   }
