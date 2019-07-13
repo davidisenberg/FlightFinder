@@ -84,7 +84,7 @@ class FlightsRepository:
                 index = index + 1
 
             flights: pd.DataFrame = pd.DataFrame()
-            if len(pq1.pieces) > 0:
+            if len(pq1.pieces) > 0: 
                 flights = pq1.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas()
 
 
