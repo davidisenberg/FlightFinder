@@ -79,7 +79,7 @@ if __name__ == "__main__":
     print("complete")
 
     print("")
-    print("Now, maybe you need to 'git add' the static folder. But commit, push, pull from remote, and restart the webserver.")
+    print("You now need to 'git add' the static folder, commit, push, pull from remote, and restart the webserver.")
 
 
 
