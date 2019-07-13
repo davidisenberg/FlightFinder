@@ -67,7 +67,7 @@ class EntryForm extends React.Component {
 
       console.log(data);
 
-      const response = await fetch("http://localhost:5003/recos", {
+      const response = await fetch("http://www.daveisenberg.com/recos", {
         method: "POST",
         headers: {
           Accept: "application/json",
