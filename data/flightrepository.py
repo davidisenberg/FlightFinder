@@ -84,7 +84,7 @@ class FlightsRepository:
                 index = index + 1
 
             flights: pd.DataFrame = pd.DataFrame()
-            if len(pq1.pieces) > 0: 
+            if len(pq1.pieces) > 0:
                 flights = pq1.read(columns=["FlyFrom","FlyTo","DepartTimeUTC","ArrivalTimeUTC","Price"]).to_pandas()
 
 
@@ -175,8 +175,7 @@ class FlightsRepository:
             #os.mkdir(os.path.join(self.__flight_parquet,"DataDate=20190707"))
             #pq.write_table(flight_table,os.path.join(self.__flight_parquet,"DataDate=20190707","1.parquet"))
             pq.write_to_dataset(flight_table,
-                                root_path=self.__flight_parquet,
-                                partition_cols=['DataDate']
+                                root_path=self.__flight_parquet
                                 )
 
         except Exception as e:
