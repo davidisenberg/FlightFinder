@@ -23,7 +23,14 @@ class EntryForm extends React.Component {
       endDate: null,
       focusedInput: null,
       flyFrom: "NYC",
-      flyTo: "CTG"
+      flyTo: "CTG",
+      exclusions: "",
+      daysMinInt1: 2,
+      daysMaxInt1: 4,
+      daysMinInt2: 2,
+      daysMaxInt2: 4,
+      daysMinTarget: 4,
+      daysMaxTarget: 10
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -49,7 +56,13 @@ class EntryForm extends React.Component {
         flyTo: this.state.flyTo,
         dateFrom: dtFrom,
         dateTo: dtTo,
-        exclusions: this.state.exclusions
+        exclusions: this.state.exclusions,
+        daysMinInt1: this.state.daysMinInt1,
+        daysMaxInt1: this.state.daysMaxInt1,
+        daysMinInt2: this.state.daysMinInt2,
+        daysMaxInt2: this.state.daysMaxInt2,
+        daysMinTarget: this.state.daysMinTarget,
+        daysMaxTarget: this.state.daysMaxTarget
       };
 
       console.log(data);

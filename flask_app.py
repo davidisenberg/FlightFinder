@@ -61,7 +61,7 @@ def get_recommendations():
         dateFrom = input["dateFrom"]
         dateTo = input["dateTo"]
 
-        days_min_int1 = input["dateMinInt1"]
+        days_min_int1 = input["daysMinInt1"]
         days_max_int1 = input["daysMaxInt1"]
         days_min_target = input["daysMinTarget"]
         days_max_target = input["daysMaxTarget"]
@@ -121,11 +121,13 @@ def get_sample_recommendations():
     return list_of_paths
 
 
-def get_recommendations(fly_from, fly_to, date_from, date_to, exclusions):
+def get_recommendations(fly_from, fly_to, date_from, date_to, exclusions, daysMinInt1, daysMaxInt1,
+                        daysMinTarget, daysMaxTarget, daysMinInt2, daysMaxInt2 ):
     print("hello")
     flights = FlightService().get_flights(date_from, date_to)
     app.logger.info(flights.shape)
-    paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 2, 10)
+    paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, daysMinInt1, daysMaxInt1,
+                        daysMinTarget, daysMaxTarget, daysMinInt2, daysMaxInt2 )
 
     app.logger.info(flights.shape)
     if (paths == None):
