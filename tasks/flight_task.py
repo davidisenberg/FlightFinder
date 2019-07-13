@@ -74,8 +74,8 @@ class CreateDailyFile(luigi.Task):
         # print("row count: " + str(count))
         #
         # if(count > 2):
-        #     with self.output().open('w') as f:
-                f.write('Yep, done for day... and what!')
+        with self.output().open('w') as f:
+            f.write('Yep, done for day... and what!')
 
 
 class CleanUp(luigi.Task):
