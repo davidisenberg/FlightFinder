@@ -168,43 +168,26 @@ class FlightsRepository:
 
     def insert_flights_pyarrow(self, flight_table):
         try:
-
-            print("before")
-            print(psutil.cpu_percent())
-            print(psutil.virtual_memory())  # physical memory usage
-            print('memory % used:', psutil.virtual_memory()[2])
-
+            print("writing")
             pq.write_to_dataset(flight_table,
                             root_path=self.__flight_parquet,
                             partition_cols=['DataDate']
                             )
 
-            print("after")
-            print(psutil.cpu_percent())
-            print(psutil.virtual_memory())  # physical memory usage
-            print('memory % used:', psutil.virtual_memory()[2])
-            
         except Exception as e:
             print(e)
 
     def get_partial_flights_pyarrow(self):
         try:
-            print("before")
-            print(psutil.cpu_percent())
-            print(psutil.virtual_memory())  # physical memory usage
-            print('memory % used:', psutil.virtual_memory()[2])
 
+            print("getting")
             pq1 = pq.ParquetDataset(self.__flight_partial_parquet)
+
+            print("reading")
             flights = pq1.read()
 
             if (len(flights) == 0):
                 raise Exception("There are no flights in this partial parquet file. I cannot allow this.")
-
-            print("after")
-            print(psutil.cpu_percent())
-            print(psutil.virtual_memory())  # physical memory usage
-            print('memory % used:', psutil.virtual_memory()[2])
-
 
             return flights
         except Exception as e:
