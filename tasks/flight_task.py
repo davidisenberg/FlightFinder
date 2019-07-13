@@ -65,8 +65,8 @@ class CreateDailyFile(luigi.Task):
     def run(self):
         FlightService().consolidate_partials_pyarrow()
 
-        df = FlightService().get_flights_for_date(datetime.date.today().strftime('%Y%m%d'))
-        if(df.count()[0] > 2):
+        count = FlightService().count_flights_at_date(datetime.date.today().strftime('%Y%m%d'))
+        if(count > 2):
             with self.output().open('w') as f:
                 f.write('Yep, done for day... and what!')
 

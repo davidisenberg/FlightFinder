@@ -47,10 +47,31 @@ class FlightItem:
 class RecommendationService:
 
     __cache: dict = {}
+    __days_min_int1: int
+    __days_max_int1: int
 
-    def get_recommendations(self, flights, sources, targets, exclusions, days_min, days_max):
+    __days_min_int2: int
+    __days_max_int2: int
+
+    __days_min_target: int
+    __days_max_target: int
+
+    __sources = []
+    __targets = []
+
+
+
+    def get_recommendations(self, flights, sources, targets, exclusions, days_min_int1, days_max_int1,
+                            days_min_target,days_max_target, days_min_int2, days_max_int2):
 
         #print("in reccomendations")
+        self.__days_min_int1 = days_min_int1
+        self.__days_max_int1 = days_max_int1
+        self.__days_min_int2 = days_min_int2
+        self.__days_max_int2 = days_max_int2
+        self.__days_min_target = days_min_target
+        self.__days_max_target = days_max_target
+
         start = time.time()
         q: queue.Queue = self.get_initial_queue(sources)
         df: pd.DataFrame = pd.DataFrame()
@@ -59,7 +80,7 @@ class RecommendationService:
             if current.state == FlightState.at_completion:
                 df = df.append(current.to_dict(), ignore_index=True)
             else:
-                self.process(q, current, flights, exclusions, targets, sources, days_min, days_max)
+                self.process(q, current, flights, exclusions, targets, sources)
                 #for elem in list(q.queue):
                 #    print(str(elem))
         if(df.empty):
@@ -76,15 +97,15 @@ class RecommendationService:
         return path
 
 
-    def process(self, q, current : FlightItem, flights, exclusions, targets, sources, days_min, days_max):
+    def process(self, q, current : FlightItem, flights, exclusions, targets, sources):
         if current.state == FlightState.at_source:
             self.update_queue_at_source(q, current, flights, exclusions, targets, sources)
         elif current.state == FlightState.at_intermediate_1:
-            self.update_queue_at_first_intermediate(q, current, flights, targets, sources, days_min, days_max)
+            self.update_queue_at_first_intermediate(q, current, flights, targets, sources)
         elif current.state == FlightState.at_target:
-            self.update_queue_at_target(q, current, flights, exclusions, targets, sources, days_min, days_max)
+            self.update_queue_at_target(q, current, flights, exclusions, targets, sources)
         elif current.state == FlightState.at_intermediate_2:
-            self.update_queue_at_second_intermediate(q, current, flights, targets, sources, days_min, days_max)
+            self.update_queue_at_second_intermediate(q, current, flights, targets, sources)
 
 
 
@@ -129,11 +150,11 @@ class RecommendationService:
         #print("Source Total:" + str(end - start))
 
 
-    def update_queue_at_first_intermediate(self, q, current: FlightItem, flight_df, targets, sources, days_min, days_max):
+    def update_queue_at_first_intermediate(self, q, current: FlightItem, flight_df, targets, sources):
         start = time.time()
         prev_arrival_time = current.get_prev_arrival_time()
-        day1 = prev_arrival_time + datetime.timedelta(days=days_min)
-        day2 = prev_arrival_time + datetime.timedelta(days=days_max)
+        day1 = prev_arrival_time + datetime.timedelta(days=self.__days_min_int1)
+        day2 = prev_arrival_time + datetime.timedelta(days=self.__days_max_int1)
         fs = flight_df
 
         f1 = self.get_flights_from_cache(fs, current.current_loc, targets)
@@ -144,13 +165,12 @@ class RecommendationService:
         end = time.time()
         print("at first intermediate:" + str(end - start))
 
-    def update_queue_at_target(self, q, current: FlightItem, flight_df, exclusions, targets, sources,
-                               days_min, days_max):
+    def update_queue_at_target(self, q, current: FlightItem, flight_df, exclusions, targets, sources):
         start = time.time()
         fs = flight_df
         prev_arrival_time = current.get_prev_arrival_time()
-        day1 = prev_arrival_time + datetime.timedelta(days=days_min)
-        day2 = prev_arrival_time + datetime.timedelta(days=days_max)
+        day1 = prev_arrival_time + datetime.timedelta(days=self.__days_min_target)
+        day2 = prev_arrival_time + datetime.timedelta(days=self.__days_max_target)
         int_destinations = fs[fs["FlyFrom"].isin(targets)]["FlyTo"].unique()
 
         if current.current_loc in self.__cache:
@@ -171,7 +191,7 @@ class RecommendationService:
         end = time.time()
         print("at target:" + str(end - start))
 
-    def update_queue_at_second_intermediate(self, q, current: FlightItem, flight_df, targets, sources, days_min, days_max):
+    def update_queue_at_second_intermediate(self, q, current: FlightItem, flight_df, targets, sources):
 
         try:
             start = time.time()
@@ -182,8 +202,8 @@ class RecommendationService:
                 f1 = self.__cache[current.current_loc.join(sources) + str(prev_arrival_time)]
             else:
                 fs = flight_df
-                day1 = prev_arrival_time + datetime.timedelta(days=days_min)
-                day2 = prev_arrival_time + datetime.timedelta(days=days_max)
+                day1 = prev_arrival_time + datetime.timedelta(days=self.__days_min_int2)
+                day2 = prev_arrival_time + datetime.timedelta(days=self.__days_max_int2)
                 f1 = self.get_flights_from_cache(fs, current.current_loc,sources)
                 f1 = f1[f1["DepartTimeUTC"] > day1]
                 f1 = f1[f1["DepartTimeUTC"] < day2]

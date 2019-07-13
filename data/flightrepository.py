@@ -27,7 +27,17 @@ class FlightsRepository:
 
         return flights
 
-    def get_flights_for_dates(self, data_date):
+    def count_flights_at_date(self, data_date):
+        try:
+            pq1 = pq.ParquetDataset(self.__flight_parquet,
+                                    filters=[('DataDate', '=', data_date)])
+            return pq1.read().num_rows
+
+        except Exception as e:
+            print(e)
+            raise
+
+    def get_flights_for_date(self, data_date):
         try:
             pq1 = pq.ParquetDataset(self.__flight_parquet,
                                    filters=[('DataDate', '=', data_date)])
