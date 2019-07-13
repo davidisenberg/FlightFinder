@@ -63,7 +63,7 @@ class CreateDailyFile(luigi.Task):
         return luigi.LocalTarget(path)
 
     def run(self):
-        FlightService().consolidate_partials()
+        FlightService().consolidate_partials_pyarrow()
 
         df = FlightService().get_flights_for_date(datetime.date.today().strftime('%Y%m%d'))
         if(df.count()[0] > 2):
