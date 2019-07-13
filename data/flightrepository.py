@@ -8,6 +8,7 @@ import datetime
 import os
 import time
 import gc
+import traceback
 
 class FlightsRepository:
 
@@ -100,6 +101,7 @@ class FlightsRepository:
 
         except Exception as e:
             print(e)
+            print(traceback.format_exc())
             flights = pd.DataFrame()
 
         return flights
