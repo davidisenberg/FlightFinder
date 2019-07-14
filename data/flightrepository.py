@@ -45,9 +45,14 @@ class FlightsRepository:
 
     def get_flights(self):
         try:
-            pq1 = pq.ParquetDataset(self.__flight_parquet)
-            flights = pq1.read(use_pandas_metadata=True).to_pandas(strings_to_categorical=True)
+            start = time.time()
+            flights = pq.read_table(self.__flight_parquet)
+            endreading = time.time()
+            print("readtime: " + str(endreading - start))
+
             self.downcast_numerics(flights)
+            enddowncasting = time.time()
+            print("downcasting time: " + str(enddowncasting - endreading))
 
             return flights
         except Exception as e:
