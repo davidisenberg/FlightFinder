@@ -165,11 +165,15 @@ class FlightService:
 
     def consolidate_partials_pyarrow(self):
         try:
-            flights = FlightsRepository().get_partial_flights_pyarrow()
+            fr = FlightsRepository()
+            flights = fr.get_partial_flights_pyarrow()
             if (flights.num_rows > 2):
-                FlightsRepository().insert_flights_pyarrow(flights)
+                FlightsRepository().insert_flights_temp_pyarrow(flights)
             else:
-                print("Failure to get partial flights")
+                raise Exception("Failure to get partial flights")
+
+            fr.archive_current_flights()
+            fr.make_temp_current()
         except:
             print("consolidate_partials")
             raise

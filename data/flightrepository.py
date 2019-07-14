@@ -13,14 +13,16 @@ import traceback
 class FlightsRepository:
 
     #root dir
-    __flight_parquet = os.path.join("storage","flights.parquet")
+    __flight_archive_parquet = os.path.join("storage",str(int((datetime.date.today()).strftime('%Y%m%d'))), "flights_archive.parquet")
+    __flight_temp_parquet = os.path.join("storage", "flights_temp.parquet")
+    __flight_parquet = os.path.join("storage", "flights.parquet")
     __flight_partial_parquet = os.path.join("storage", "flights_partial.parquet")
 
     def get_flights_for_dates(self, date_from, date_to):
         try:
             table = pq.read_table(self.__flight_parquet)
 
-            flights = table.to_pandas().drop_duplicates()
+            flights = table.to_pandas()
             flights = flights[(flights['DepartTimeUTC'] > date_from) &
                               (flights['DepartTimeUTC'] < date_to)  ]
         except Exception as e:
@@ -29,21 +31,21 @@ class FlightsRepository:
 
         return flights
 
-    def count_flights_at_date(self, data_date):
+    def count_flights(self, data_date):
         try:
-            pq1 = pq.ParquetDataset(self.__flight_parquet,
-                                    filters=[('DataDate', '=', data_date)])
-            return pq1.read().num_rows
+            pq1 = pq.read_table(self.__flight_parquet)
+            return pq1.num_rows
 
         except Exception as e:
             print(e)
             raise
 
-    def get_flights_for_date(self, data_date):
+    def get_flights(self):
         try:
-            pq1 = pq.ParquetDataset(self.__flight_parquet,
-                                   filters=[('DataDate', '=', data_date)])
-            flights = pq1.read().to_pandas()
+            pq1 = pq.ParquetDataset(self.__flight_parquet)
+            flights = pq1.read(use_pandas_metadata=True).to_pandas(strings_to_categorical=True)
+            self.downcast_numerics(flights)
+
             return flights
         except Exception as e:
             print(e)
@@ -51,10 +53,10 @@ class FlightsRepository:
 
         return flights
 
+
+    #deprecated as we're no longer using parquet dataset
     def get_latest_flights(self, date_from, date_to):
         try:
-
-            #self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
 
             start = time.time()
             print("checking directory: " + self.__flight_parquet )
@@ -106,7 +108,7 @@ class FlightsRepository:
 
         return flights
 
-
+    # deprecated as we're no longer using parquet dataset
     def get_todays_flights(self, fly_from, fly_to, date_from, date_to):
         try:
 
@@ -145,7 +147,7 @@ class FlightsRepository:
 
     def insert_flights(self, flights):
         try:
-            table = pa.Table.from_pandas(flights, preserve_index=False)
+            table = pa.Table.from_pandas(flights, preserve_index=False,)
             pq.write_to_dataset(table,
                                 root_path=self.__flight_parquet,
                                 partition_cols=['DataDate']
@@ -157,8 +159,7 @@ class FlightsRepository:
         try:
             pq1 = pq.ParquetDataset(self.__flight_partial_parquet)
             flights: pd.DataFrame = pd.DataFrame()
-            flights = flights.append(pq1.read().to_pandas())
-            flights.drop_duplicates()
+            flights = pq1.read().to_pandas()
 
             if (len(flights) == 0):
                 raise Exception("There are no flights in this partial parquet file. I cannot allow this.")
@@ -168,15 +169,19 @@ class FlightsRepository:
             print(e)
             raise
 
-    def insert_flights_pyarrow(self, flight_table):
+    def archive_current_flights(self):
+        os.shutil.move(self.__flight_parquet, self.__flight_archive_parquet)
+
+
+    def make_temp_current(self):
+        os.shutil.move(self.__flight_temp_parquet, self.__flight_parquet)
+
+
+    def insert_flights_temp_pyarrow(self, flight_table):
         try:
             gc.collect()
             print("writing")
-            #os.mkdir(os.path.join(self.__flight_parquet,"DataDate=20190707"))
-            #pq.write_table(flight_table,os.path.join(self.__flight_parquet,"DataDate=20190707","1.parquet"))
-            pq.write_to_dataset(flight_table,
-                                root_path=self.__flight_parquet
-                                )
+            pq.write_table(flight_table,self.__flight_temp_parquet)
 
         except Exception as e:
             print(e)
@@ -198,14 +203,33 @@ class FlightsRepository:
             print(e)
             raise
 
+    def categorize_object_columns(self, df: pd.DataFrame):
+
+        cols = df.select_dtypes(include=['object'])
+
+        smaller_df = pd.DataFrame()
+        for col in list(df.columns):
+            if(df[col].dtype.name == "object"):
+                smaller_df[col] = df[col].astype('category')
+            else:
+                smaller_df[col] = df[col]
+
+        return smaller_df
+
+    def downcast_numerics(self, df: pd.DataFrame):
+
+        floats = df.select_dtypes(include=['floating']).columns
+        ints = df.select_dtypes(include=['integer']).columns
+        columns_to_convert = dict()
+
+        columns_to_convert.update({col: "float" for col in floats})
+        columns_to_convert.update({col: "integer" for col in ints})
+
+        for col, dtype in columns_to_convert.items():
+            df[col] = pd.to_numeric(df[col],downcast=dtype)
 
 
 
 
-
-'''
-start = datetime.datetime(2019,6,1)
-end = datetime.datetime(2019,6,15)
-flights = FlightsRepository().get_latest_flights(start, end)
-flights
-'''
+#if __name__ == "__main__":
+#    self.__flight_parquet = "C:\\Users\\Dave\\PycharmProjects\\FlightFinder\\storage\\flights.parquet"
