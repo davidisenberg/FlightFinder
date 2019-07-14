@@ -9,6 +9,7 @@ import os
 import time
 import gc
 import traceback
+import shutil
 
 class FlightsRepository:
 
@@ -171,12 +172,12 @@ class FlightsRepository:
 
     def archive_current_flights(self):
         if os.path.exists(self.__flight_parquet):
-            os.shutil.move(self.__flight_parquet, self.__flight_archive_parquet)
+            shutil.move(self.__flight_parquet, self.__flight_archive_parquet)
 
 
     def make_temp_current(self):
         if os.path.exists(self.__flight_temp_parquet):
-            os.shutil.move(self.__flight_temp_parquet, self.__flight_parquet)
+            shutil.move(self.__flight_temp_parquet, self.__flight_parquet)
 
 
     def insert_flights_temp_pyarrow(self, flight_table):
