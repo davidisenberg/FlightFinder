@@ -22,11 +22,12 @@ class FlightsRepository:
 
     def get_flights_for_dates(self, date_from, date_to):
         try:
-            table = pq.read_table(self.__flight_parquet)
+            f1 = self.get_flights()
+            f1 = f1[f1["DepartTimeUTC"] > date_from]
+            f1 = f1[f1["DepartTimeUTC"] < date_to]
 
-            flights = table.to_pandas()
-            flights = flights[(flights['DepartTimeUTC'] > date_from) &
-                              (flights['DepartTimeUTC'] < date_to)  ]
+            return f1
+
         except Exception as e:
             print(e)
             flights = pd.DataFrame()

@@ -10,7 +10,7 @@ class FlightService:
     def get_flights(self, date_from, date_to):
         try:
             flights = []
-            flights = FlightsRepository().get_flights(date_from, date_to)
+            flights = FlightsRepository().get_flights_for_dates(date_from, date_to)
             if len(flights) > 0:
                 return flights
 
