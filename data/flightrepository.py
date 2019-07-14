@@ -45,6 +45,7 @@ class FlightsRepository:
 
     def get_flights(self):
         try:
+            print("getting data")
             start = time.time()
             flights = pq.read_table(self.__flight_parquet)
             endreading = time.time()
