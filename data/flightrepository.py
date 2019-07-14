@@ -170,11 +170,13 @@ class FlightsRepository:
             raise
 
     def archive_current_flights(self):
-        os.shutil.move(self.__flight_parquet, self.__flight_archive_parquet)
+        if os.path.exists(self.__flight_parquet):
+            os.shutil.move(self.__flight_parquet, self.__flight_archive_parquet)
 
 
     def make_temp_current(self):
-        os.shutil.move(self.__flight_temp_parquet, self.__flight_parquet)
+        if os.path.exists(self.__flight_temp_parquet):
+            os.shutil.move(self.__flight_temp_parquet, self.__flight_parquet)
 
 
     def insert_flights_temp_pyarrow(self, flight_table):
