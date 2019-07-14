@@ -25,15 +25,15 @@ class FlightService:
         return flights
 
     def count_flights_at_date(self, data_date):
-        return FlightsRepository().count_flights_at_date(data_date)
+        return self.__fr.count_flights_at_date(data_date)
 
     def get_flights_for_date(self,data_date):
-        flights = FlightsRepository().get_flights_for_date(data_date)
+        flights = self.__fr.get_flights_for_date(data_date)
         return flights
 
     def get_todays_flights(self,fly_from, fly_to, date_from, date_to):
         try:
-            flights = FlightsRepository().get_todays_flights(fly_from, fly_to, date_from, date_to)
+            flights = self.__fr.get_todays_flights(fly_from, fly_to, date_from, date_to)
             if len(flights) > 0:
                return flights
 
@@ -60,7 +60,7 @@ class FlightService:
     def add_one_flight_for_year(self,fly_from,fly_to):
         try:
             flights = self.get_one_flight_for_year(fly_from, fly_to)
-            FlightsRepository().insert_partial_flights(flights)
+            self.__fr.insert_partial_flights(flights)
         except Exception as e:
             print(e)
             raise
@@ -69,7 +69,7 @@ class FlightService:
     def add_all_flights(self, sources, destinations, date_from, date_to):
         try:
             flights = self.get_all_flights( sources, destinations, date_from, date_to)
-            FlightsRepository().insert_flights(flights)
+            self.__fr.insert_flights(flights)
         except Exception as e:
             print(e)
             raise
@@ -170,7 +170,7 @@ class FlightService:
 
     def consolidate_partials_pyarrow(self):
         try:
-            fr = FlightsRepository()
+            fr = self.__fr
             flights = fr.get_partial_flights_pyarrow()
             if (flights.num_rows > 2):
                 FlightsRepository().insert_flights_temp_pyarrow(flights)
