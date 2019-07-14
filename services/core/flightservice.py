@@ -7,13 +7,15 @@ import time
 
 class FlightService:
 
+    __fr = FlightsRepository()
+
     def cache_flights(self):
         FlightsRepository().get_flights()
 
     def get_flights(self, date_from, date_to):
         try:
             flights = []
-            flights = FlightsRepository().get_flights_for_dates(date_from, date_to)
+            flights = self.__fr.get_flights_for_dates(date_from, date_to)
             if len(flights) > 0:
                 return flights
 

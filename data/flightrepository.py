@@ -49,7 +49,7 @@ class FlightsRepository:
 
     def get_flights(self):
         try:
-            if self.__is_flights_cache_set:
+            if self.__is_flights_cache_set :
                 return self.__flights
 
             print("getting data")
