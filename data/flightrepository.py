@@ -19,6 +19,7 @@ class FlightsRepository:
     __flight_temp_parquet = os.path.join("storage", "flights_temp.parquet")
     __flight_parquet = os.path.join("storage", "flights.parquet")
     __flight_partial_parquet = os.path.join("storage", "flights_partial.parquet")
+    __flight_dataset_parquet = os.path.join("storage", "flights_dataset.parquet")
 
     def get_flights_for_dates(self, date_from, date_to):
         try:
@@ -47,8 +48,9 @@ class FlightsRepository:
         try:
             print("getting data")
             start = time.time()
-            flights = pq.read_table(self.__flight_parquet).to_pandas()
+            flights = pq.read_table(self.__flight_parquet).to_pandas() 
             endreading = time.time()
+            #flights = table.to_pandas()
             print("readtime: " + str(endreading - start))
 
             self.downcast_numerics(flights)
@@ -59,6 +61,14 @@ class FlightsRepository:
         except Exception as e:
             print(e)
             flights = pd.DataFrame()
+
+        return flights
+
+
+    def get_flights_parquet_dataset(self):
+        pq1 = pq.ParquetDataset(self.__flight_dataset_parquet,
+                                filters=[('DataDate', '=',"20190705")])
+        flights = pq1.read().to_pandas()
 
         return flights
 
@@ -156,11 +166,8 @@ class FlightsRepository:
 
     def insert_flights(self, flights):
         try:
-            table = pa.Table.from_pandas(flights, preserve_index=False,)
-            pq.write_to_dataset(table,
-                                root_path=self.__flight_parquet,
-                                partition_cols=['DataDate']
-                                )
+            table = pa.Table.from_pandas(flights, preserve_index=False)
+            pq.write_table(table,self.__flight_parquet)
         except Exception as e:
             print(e)
 
