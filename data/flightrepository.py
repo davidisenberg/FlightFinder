@@ -14,6 +14,7 @@ import shutil
 class FlightsRepository:
 
     #root dir
+    __flight_archive_dir = os.path.join("storage", "flights_archive.parquet")
     __flight_archive_parquet = os.path.join("storage",str(int((datetime.date.today()).strftime('%Y%m%d'))), "flights_archive.parquet")
     __flight_temp_parquet = os.path.join("storage", "flights_temp.parquet")
     __flight_parquet = os.path.join("storage", "flights.parquet")
@@ -172,6 +173,8 @@ class FlightsRepository:
 
     def archive_current_flights(self):
         if os.path.exists(self.__flight_parquet):
+            if ~os.path.exists(self.__flight_archive_dir):
+                os.mkdir(self.__flight_archive_dir)
             shutil.move(self.__flight_parquet, self.__flight_archive_parquet)
 
 
