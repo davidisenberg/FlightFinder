@@ -14,7 +14,7 @@ import shutil
 class FlightsRepository:
 
     #root dir
-    __flight_archive_dir = os.path.join("storage", "flights_archive.parquet")
+    __flight_archive_dir = os.path.join("storage", str(int((datetime.date.today()).strftime('%Y%m%d'))))
     __flight_archive_parquet = os.path.join("storage",str(int((datetime.date.today()).strftime('%Y%m%d'))), "flights_archive.parquet")
     __flight_temp_parquet = os.path.join("storage", "flights_temp.parquet")
     __flight_parquet = os.path.join("storage", "flights.parquet")
