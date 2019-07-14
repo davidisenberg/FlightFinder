@@ -64,6 +64,7 @@ class FlightsRepository:
             print("downcasting time: " + str(enddowncasting - endreading))
 
             self.__flights = flights
+            self.__is_flights_cache_set = True
             return flights
 
         except Exception as e:
