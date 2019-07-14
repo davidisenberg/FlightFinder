@@ -21,6 +21,9 @@ class FlightsRepository:
     __flight_partial_parquet = os.path.join("storage", "flights_partial.parquet")
     __flight_dataset_parquet = os.path.join("storage", "flights_dataset.parquet")
 
+    __is_flights_cache_set = False
+    __flights = pd.DataFrame()
+
     def get_flights_for_dates(self, date_from, date_to):
         try:
             f1 = self.get_flights()
@@ -46,9 +49,12 @@ class FlightsRepository:
 
     def get_flights(self):
         try:
+            if self.__is_flights_cache_set:
+                return self.__flights
+
             print("getting data")
             start = time.time()
-            flights = pq.read_table(self.__flight_parquet).to_pandas() 
+            flights = pq.ParquetDataset(self.__flight_parquet).read().to_pandas()
             endreading = time.time()
             #flights = table.to_pandas()
             print("readtime: " + str(endreading - start))
@@ -57,10 +63,18 @@ class FlightsRepository:
             enddowncasting = time.time()
             print("downcasting time: " + str(enddowncasting - endreading))
 
+            self.__flights = flights
             return flights
+
         except Exception as e:
             print(e)
             flights = pd.DataFrame()
+
+        return flights
+
+    def get_flights_parquet_dataset_full(self):
+        pq1 = pq.ParquetDataset(self.__flight_dataset_parquet)
+        flights = pq1.read().to_pandas()
 
         return flights
 
@@ -201,7 +215,7 @@ class FlightsRepository:
         try:
             gc.collect()
             print("writing")
-            pq.write_table(flight_table,self.__flight_temp_parquet)
+            pq.write_to_dataset(flight_table,self.__flight_temp_parquet)
 
         except Exception as e:
             print(e)

@@ -7,6 +7,9 @@ import time
 
 class FlightService:
 
+    def cache_flights(self):
+        FlightsRepository().get_flights()
+
     def get_flights(self, date_from, date_to):
         try:
             flights = []

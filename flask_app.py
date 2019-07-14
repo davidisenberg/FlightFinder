@@ -17,7 +17,10 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 import logging
 
-print ("hello world")
+print ("David's first comment... let's cache those flights")
+FlightService().cache_flights()
+print ("Cach complete")
+
 
 if __name__ == '__main__':
     app = Flask(__name__, static_folder="static", template_folder="templates")
