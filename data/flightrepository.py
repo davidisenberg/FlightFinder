@@ -47,7 +47,7 @@ class FlightsRepository:
         try:
             print("getting data")
             start = time.time()
-            flights = pq.read_table(self.__flight_parquet)
+            flights = pq.read_table(self.__flight_parquet).to_pandas()
             endreading = time.time()
             print("readtime: " + str(endreading - start))
 
