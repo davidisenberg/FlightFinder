@@ -11,6 +11,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
+import Accordion from "react-bootstrap/Accordion";
 
 class EntryForm extends React.Component {
   constructor(props) {
@@ -115,85 +116,187 @@ class EntryForm extends React.Component {
             <Container>
               <Row>
                 <Col xs lg>
-                  <Card>
-                    <Card.Header style={{ textAlign: "left" }}>
-                      Flights
-                    </Card.Header>
-                    <Card.Body>
-                      <Form
-                        style={{
-                          textAlign: "left"
-                        }}
-                        onSubmit={e => this.handleSubmit(e)}
-                      >
-                        <Form.Row>
-                          <Col>
-                            <Form.Group controlId="from">
-                              <Form.Label>From</Form.Label>
-                              <Form.Control
-                                type="text"
-                                name="flyFrom"
-                                value={this.state.flyFrom}
-                                onChange={this.handleInputChange}
-                                placeholder="NYC"
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col>
-                            <Form.Group controlId="to">
-                              <Form.Label>To</Form.Label>
-                              <Form.Control
-                                name="flyTo"
-                                value={this.state.FlyTo}
-                                type="text"
-                                onChange={this.handleInputChange}
-                                placeholder="CTG"
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Form.Row>
+                  <Form
+                    style={{
+                      textAlign: "left"
+                    }}
+                    onSubmit={e => this.handleSubmit(e)}
+                  >
+                    <Accordion>
+                      <Card style={{ overflow: "visible" }}>
+                        <Card.Header style={{ textAlign: "left" }}>
+                          Flights
+                        </Card.Header>
+                        <Card.Body>
+                          <Form.Row>
+                            <Col>
+                              <Form.Group controlId="from">
+                                <Form.Label>From</Form.Label>
+                                <Form.Control
+                                  type="text"
+                                  name="flyFrom"
+                                  value={this.state.flyFrom}
+                                  onChange={this.handleInputChange}
+                                  placeholder="NYC"
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col>
+                              <Form.Group controlId="to">
+                                <Form.Label>To</Form.Label>
+                                <Form.Control
+                                  name="flyTo"
+                                  value={this.state.FlyTo}
+                                  type="text"
+                                  onChange={this.handleInputChange}
+                                  placeholder="CTG"
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Form.Row>
 
-                        <Form.Row>
-                          <Col>
-                            <Form.Group controlId="dtFrom">
-                              <Form.Label>Earliest Departure</Form.Label>
-                              <DatePicker
-                                className="form-control"
-                                selected={this.state.startDate}
-                                selectsStart
-                                startDate={this.state.startDate}
-                                endDate={this.state.endDate}
-                                onChange={this.handleChangeStart}
-                              />
-                            </Form.Group>
-                          </Col>
-                          <Col>
-                            <Form.Group controlId="dtTo">
-                              <Form.Label>Latest Return</Form.Label>
-                              <DatePicker
-                                className="form-control"
-                                selected={this.state.endDate}
-                                selectsEnd
-                                startDate={this.state.startDate}
-                                endDate={this.state.endDate}
-                                onChange={this.handleChangeEnd}
-                                minDate={this.state.startDate}
-                              />
-                            </Form.Group>
-                          </Col>
-                        </Form.Row>
-                        <Button
-                          variant="primary"
-                          type="submit"
-                          ref={btn => {
-                            this.btn = btn;
-                          }}
+                          <Form.Row>
+                            <Col>
+                              <Form.Group controlId="dtFrom">
+                                <Form.Label>Earliest Departure</Form.Label>
+                                <DatePicker
+                                  className="form-control"
+                                  selected={this.state.startDate}
+                                  selectsStart
+                                  startDate={this.state.startDate}
+                                  endDate={this.state.endDate}
+                                  onChange={this.handleChangeStart}
+                                  style={{ overflow: "visible" }}
+                                />
+                              </Form.Group>
+                            </Col>
+                            <Col>
+                              <Form.Group controlId="dtTo">
+                                <Form.Label>Latest Return</Form.Label>
+                                <DatePicker
+                                  className="form-control"
+                                  selected={this.state.endDate}
+                                  selectsEnd
+                                  startDate={this.state.startDate}
+                                  endDate={this.state.endDate}
+                                  onChange={this.handleChangeEnd}
+                                  minDate={this.state.startDate}
+                                />
+                              </Form.Group>
+                            </Col>
+                          </Form.Row>
+                        </Card.Body>
+                      </Card>
+                      <Card>
+                        <Accordion.Toggle
+                          as={Button}
+                          variant="link"
+                          eventKey="1"
+                          style={{ textAlign: "left" }}
                         >
-                          Submit
-                        </Button>
-                      </Form>
-                    </Card.Body>
-                  </Card>
+                          Advanced
+                        </Accordion.Toggle>
+                        <Accordion.Collapse eventKey="1">
+                          <Card.Body>
+                            <Form.Row>
+                              <Col>
+                                <Form.Label>First Stop Length</Form.Label>
+                              </Col>
+                            </Form.Row>
+                            <Form.Row>
+                              <Col>
+                                <Form.Control
+                                  type="text"
+                                  name="daysMinInt1"
+                                  value={this.state.daysMinInt1}
+                                  onChange={this.handleInputChange}
+                                  defaultValue="2"
+                                />
+                              </Col>
+                              <Col>
+                                <Form.Group>
+                                  <Form.Control
+                                    type="text"
+                                    name="daysMaxInt1"
+                                    value={this.state.daysMaxInt1}
+                                    onChange={this.handleInputChange}
+                                    defaultValue="4"
+                                  />
+                                </Form.Group>
+                              </Col>
+                            </Form.Row>
+                            <Form.Row>
+                              <Col>
+                                <Form.Label>Target Stop Length</Form.Label>
+                              </Col>
+                            </Form.Row>
+                            <Form.Row>
+                              <Col>
+                                <Form.Control
+                                  type="text"
+                                  name="daysMinTarget"
+                                  value={this.state.daysMinTarget}
+                                  onChange={this.handleInputChange}
+                                  defaultValue="6"
+                                />
+                              </Col>
+                              <Col>
+                                <Form.Group>
+                                  <Form.Control
+                                    type="text"
+                                    name="daysMaxTarget"
+                                    value={this.state.daysMaxTarget}
+                                    onChange={this.handleInputChange}
+                                    defaultValue="10"
+                                  />
+                                </Form.Group>
+                              </Col>
+                            </Form.Row>
+                            <Form.Row>
+                              <Col>
+                                <Form.Label>Last Stop Length</Form.Label>
+                              </Col>
+                            </Form.Row>
+                            <Form.Row>
+                              <Col>
+                                <Form.Control
+                                  type="text"
+                                  name="daysMinInt2"
+                                  value={this.state.daysMinInt2}
+                                  onChange={this.handleInputChange}
+                                  defaultValue="2"
+                                />
+                              </Col>
+                              <Col>
+                                <Form.Group>
+                                  <Form.Control
+                                    type="text"
+                                    name="daysMaxInt2"
+                                    value={this.state.daysMaxInt2}
+                                    onChange={this.handleInputChange}
+                                    defaultValue="4"
+                                  />
+                                </Form.Group>
+                              </Col>
+                            </Form.Row>
+                          </Card.Body>
+                        </Accordion.Collapse>
+                      </Card>
+                      <Card>
+                        <Card.Body style={{ textAlign: "center" }}>
+                          <Button
+                            variant="primary"
+                            type="submit"
+                            ref={btn => {
+                              this.btn = btn;
+                            }}
+                          >
+                            Submit
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Accordion>
+                  </Form>
                 </Col>
                 <Col>
                   <h1>Trip Recommendations</h1>

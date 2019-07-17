@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pandas as pd
@@ -8,7 +7,7 @@ import datetime
 import os
 import time
 import gc
-import traceback
+#import traceback
 import shutil
 
 class FlightsRepository:
@@ -54,6 +53,7 @@ class FlightsRepository:
 
             print("getting data")
             start = time.time()
+
             flights = pq.ParquetDataset(self.__flight_parquet).read().to_pandas()
             endreading = time.time()
             #flights = table.to_pandas()
@@ -137,7 +137,7 @@ class FlightsRepository:
 
         except Exception as e:
             print(e)
-            print(traceback.format_exc())
+            #print(traceback.format_exc())
             flights = pd.DataFrame()
 
         return flights

@@ -23,7 +23,7 @@ if __name__ == '__main__':
     app = Flask(__name__, static_folder="static", template_folder="templates")
 else:
     app = Flask(__name__)
-    fr = FlightService()
+fr = FlightService()
 
 CORS(app)
 print(__name__)
@@ -89,6 +89,13 @@ def get_sample_recommendations():
     if fly_from == 'NYC':
         fly_from = ["JFK","EWR","LGA"]
 
+    days_min_int1 = input["daysMinInt1"]
+    days_max_int1 = input["daysMaxInt1"]
+    days_min_target = input["daysMinTarget"]
+    days_max_target = input["daysMaxTarget"]
+    days_min_int2 = input["daysMinInt2"]
+    days_max_int2 = input["daysMaxInt2"]
+    exclusions = [input["exclusions"]]
 
     fly_to = [input["flyTo"]]
     date_from = input["dateFrom"]
@@ -105,12 +112,16 @@ def get_sample_recommendations():
 
     # paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, 2, 10)
 
-    paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, [], 2, 10)
+    paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, days_min_int1, days_max_int1,
+                        days_min_target, days_max_target, days_min_int2, days_max_int2 )
 
     if (paths == None):
         return json.dumps('{ "result": { "error": "no data returned"} }')
 
     app.logger.info("after recos")
+
+
+
 
     list_of_paths = []
     for path in paths:

@@ -6,6 +6,14 @@ import Table from "react-bootstrap/Table";
 import Spinner from "react-bootstrap/Spinner";
 
 class DisplayResults extends React.Component {
+  getTotalPrice(flights) {
+    const price = flights.reduce(
+      (totalPrice, flight) => totalPrice + parseInt(flight.Price, 10),
+      0
+    );
+    return price;
+  }
+
   render() {
     if (!this.props.result) return <p />;
 
@@ -34,7 +42,9 @@ class DisplayResults extends React.Component {
           ) : (
             <Container>
               <Card>
-                <Card.Header style={{ textAlign: "left" }}>Flights</Card.Header>
+                <Card.Header style={{ textAlign: "left" }}>
+                  ${this.getTotalPrice(flights)}
+                </Card.Header>
                 <Table>
                   <thead>
                     <tr>
