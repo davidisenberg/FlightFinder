@@ -34,7 +34,7 @@ def test_get_recos():
         targets = ["LHR"]
         exclusions = []
 
-        results= RecommendationService().get_recommendations(flights, sources, targets, exclusions, 2, 10)
+        results= RecommendationService().get_recommendations(flights, sources, targets, exclusions, 2, 10, 25)
         print(len(results) ==2)
     except Exception as e:
         print(e)

@@ -26,7 +26,9 @@ class FlightFromApi:
             if "window.airport" in script.text:
                 getRoutesJs = js2py.eval_js('function() {  var window = {airport:"", filter:"", routes:"",selected:"",activetab:""};' + script.text + ' return window.routes; }')  # js to esprima syntax tree
                 for route in getRoutesJs().to_list():
-                    directs.append(Direct(destination, route["iata_to"]))
+                    directs.append(Direct(destination, route["iata_to"], route["airport"]["country"],route["city_name_en"],
+                                          route["airport"]["display_name"],route["airport"]["latitude"], route["airport"]["longitude"],
+                                          route["airport"]["no_routes"] ))
         directs = pd.DataFrame.from_records([direct.to_dict() for direct in directs])
         return directs
 

@@ -11,8 +11,12 @@ class Flight:
     DepartTimeUTC: datetime
     FlightNum: str
     DataDate: int
+    FlyFromDisplayName: str
+    FlyToDisplayName: str
 
-    def __init__(self, fly_from, fly_to, price, airline, duration, arrivalTimeUTC, departTimeUTC, flightNum, dataDate):
+    def __init__(self, fly_from, fly_to, price, airline, duration,
+                 arrivalTimeUTC, departTimeUTC, flightNum, dataDate,
+                 fly_from_display_name, fly_to_display_name):
         self.FlyFrom = fly_from
         self.FlyTo = fly_to
         self.Price = price
@@ -22,6 +26,8 @@ class Flight:
         self.DepartTimeUTC = departTimeUTC
         self.FlightNum = flightNum
         self.DataDate = dataDate
+        self.FlyFromDisplayName = fly_from_display_name
+        self.FlyToDisplayName = fly_to_display_name
 
     def to_dict(self):
         return {
@@ -33,5 +39,7 @@ class Flight:
             'ArrivalTimeUTC': self.ArrivalTimeUTC,
             'DepartTimeUTC': self.DepartTimeUTC,
             'FlightNum': self.FlightNum,
-            'DataDate' : self.DataDate
+            'DataDate' : self.DataDate,
+            'FlyFromDisplayName' : self.FlyFromDisplayName,
+            'FlyToDisplayName' : self.FlyToDisplayName
         }

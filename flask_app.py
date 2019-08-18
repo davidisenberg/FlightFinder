@@ -137,9 +137,13 @@ def get_recommendations(fly_from, fly_to, date_from, date_to, exclusions, daysMi
                         daysMinTarget, daysMaxTarget, daysMinInt2, daysMaxInt2 ):
     print("hello")
     flights = fr.get_flights(date_from, date_to)
+
+    #flights = get_flights_temp()
+    directs = DirectService().get_all_directs()
+    airports = DirectService().get_airports()
     app.logger.info(flights.shape)
-    paths = RecommendationService().get_recommendations(flights, fly_from, fly_to, exclusions, daysMinInt1, daysMaxInt1,
-                        daysMinTarget, daysMaxTarget, daysMinInt2, daysMaxInt2 )
+    paths = RecommendationService().get_recommendations(flights, directs, airports, fly_from, fly_to, exclusions, daysMinInt1, daysMaxInt1,
+                        daysMinTarget, daysMaxTarget, daysMinInt2, daysMaxInt2,75 )
 
     app.logger.info(flights.shape)
     if (paths == None):
@@ -176,25 +180,47 @@ def get_directs():
     return json.dumps([ob.__dict__ for ob in directs])
 
 def get_flights_temp():
+    #direct
     f1 = Flight("JFK", "LHR", 1000, "DU", "", datetime.datetime(2019, 5, 10, 11, 0, 0),
-                datetime.datetime(2019, 5, 10, 6, 0, 0), "123", datetime.date.today())
-    f2 = Flight("JFK", "MIA", 50, "DU", "", datetime.datetime(2019, 5, 5, 11, 0, 0),
-                datetime.datetime(2019, 5, 5, 6, 0, 0), "456", datetime.date.today())
-    f3 = Flight("MIA", "LHR", 100, "DU", "", datetime.datetime(2019, 5, 8, 11, 0, 0),
-                datetime.datetime(2019, 5, 8, 6, 0, 0), "456", datetime.date.today())
-    f4 = Flight("LHR", "EWR", 450, "DU", "", datetime.datetime(2019, 5, 18, 11, 0, 0),
-                datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today())
-    f5 = Flight("LHR", "ATL", 200, "DU", "", datetime.datetime(2019, 5, 18, 11, 0, 0),
-                datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today())
-    f6 = Flight("ATL", "JFK", 300, "DU", "", datetime.datetime(2019, 5, 20, 11, 0, 0),
-                datetime.datetime(2019, 5, 20, 6, 0, 0), "123", datetime.date.today())
-    f7 = Flight("EWR", "LHR", 1200, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0),
-                datetime.datetime(2019, 5, 16, 6, 0, 0), "123", datetime.date.today())
+                datetime.datetime(2019, 5, 10, 6, 0, 0), "123", datetime.date.today(),"JFK","LHR")
+    f7 = Flight("EWR", "LHR", 1200, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0,),
+                datetime.datetime(2019, 5, 16, 6, 0, 0), "123", datetime.date.today(),"EWR", "LHR")
     f8 = Flight("JFK", "LHR", 1200, "DU", "", datetime.datetime(2019, 5, 16, 11, 0, 0),  # dup of f1 but higher price
-                datetime.datetime(2019, 5, 16, 6, 0, 0), "123", datetime.date.today())
+                datetime.datetime(2019, 5, 16, 6, 0, 0), "123", datetime.date.today(),"JFK", "LHR")
     f9 = Flight("JFK", "LHR", 5, "DU", "", datetime.datetime(2019, 5, 10, 11, 0, 0),  # dup of f1 but on same day
-                datetime.datetime(2019, 5, 10, 6, 0, 0), "123", datetime.date.today())
-    fs = [f1, f2, f3, f4, f5, f6, f7, f8, f9]
+                datetime.datetime(2019, 5, 10, 6, 0, 0), "123", datetime.date.today(),"JFK", "LHR")
+
+    #stop in miami
+    f2 = Flight("JFK", "MIA", 50, "DU", "", datetime.datetime(2019, 5, 5, 11, 0, 0),
+                datetime.datetime(2019, 5, 5, 6, 0, 0), "456", datetime.date.today(),"JFK", "MIA")
+    f3 = Flight("MIA", "LHR", 100, "DU", "", datetime.datetime(2019, 5, 8, 11, 0, 0),
+                datetime.datetime(2019, 5, 8, 6, 0, 0), "456", datetime.date.today(),"MIA", "LHR")
+
+    #surrounding airports stopover
+    f10 = Flight("LGA", "HOU", 100, "DU", "", datetime.datetime(2019, 5, 8, 11, 0, 0),
+                datetime.datetime(2019, 5, 8, 6, 0, 0), "456", datetime.date.today(), "LGA", "IAH")
+    f11 = Flight("IAH", "LGW", 100, "DU", "", datetime.datetime(2019, 5, 11, 11, 0, 0),
+                datetime.datetime(2019, 5, 11, 6, 0, 0), "456", datetime.date.today(), "HOU", "LGW")
+
+    #return flights
+    f4 = Flight("LHR", "EWR", 450, "DU", "", datetime.datetime(2019, 5, 18, 11, 0, 0),
+                datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today(),"LHR", "EWR")
+
+    #stop in atlanta
+    f5 = Flight("LHR", "ATL", 200, "DU", "", datetime.datetime(2019, 5, 18, 11, 0, 0),
+                datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today(),"LHR", "ATL")
+    f6 = Flight("ATL", "JFK", 300, "DU", "", datetime.datetime(2019, 5, 20, 11, 0, 0),
+                datetime.datetime(2019, 5, 20, 6, 0, 0), "123", datetime.date.today(),"ATL", "JFK")
+
+    # sourrounding airport stopover intermediate two
+    f12 = Flight("LCY", "IAH", 200, "DU", "", datetime.datetime(2019, 5, 18, 11, 0, 0),
+                datetime.datetime(2019, 5, 18, 6, 0, 0), "123", datetime.date.today(), "LGW", "IAH")
+    f13 = Flight("HOU", "SWF", 300, "DU", "", datetime.datetime(2019, 5, 20, 11, 0, 0),
+                datetime.datetime(2019, 5, 20, 6, 0, 0), "123", datetime.date.today(), "HOU", "SWF")
+
+
+    #fs = [f1, f2, f3, f4, f5, f6, f7, f8, f9,f10,f11 ]
+    fs = [f10, f11, f12, f13, f5, f6, f4]
     flights = pd.DataFrame.from_records([f.to_dict() for f in fs])
     return flights
 

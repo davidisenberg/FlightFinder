@@ -28,6 +28,10 @@ class DirectService:
             direct_list.append(row_list)
         return direct_list
 
+    def get_airports(self):
+        airports = DirectRepository().get_airports()
+        return airports
+
 
 #for direct in DirectService().get_directs_list():
 #    print("" + direct["FlyFrom"] + " | " + direct["FlyTo"])

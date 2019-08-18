@@ -2,10 +2,12 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 import pandas as pd
 import os
+import geopy.distance
 
 class DirectRepository:
 
     __directs_parquet = os.path.join("storage", "directs.parquet")
+    __airports_parquet = os.path.join("storage", "airports.parquet")
 
     def get_all_directs(self):
         try:
@@ -58,6 +60,44 @@ class DirectRepository:
                                 )
         except Exception as e:
             print(e)
+
+    def get_airports(self):
+        try:
+            table = pq.read_table(self.__airports_parquet)
+            airports = table.to_pandas().drop_duplicates()
+        except Exception as e:
+            print(e)
+            airports = pd.DataFrame()
+
+        return airports
+
+    def create_airports(self):
+        directs = self.get_all_directs()
+        airports = directs.groupby("FlyTo").first().reset_index().rename(columns={"FlyTo": "Iata"})[
+            ["Iata", "City", "Country", "DisplayName", "Latitude", "Longitude", "NumberOfRoutes"]]
+
+        a = airports
+        for index, row in a.iterrows():
+            coord = (row["Latitude"], row["Longitude"])
+            a["distance"] = a.apply(self.calc_geo, coordinates_1=coord, axis=1)
+            close = a[a["distance"] < 25]["Iata"].to_list()
+            a.at[index, "geo25"] = ','.join(close)
+            close = a[a["distance"] < 50]["Iata"].to_list()
+            a.at[index, "geo50"] = ','.join(close)
+            close = a[a["distance"] < 75]["Iata"].to_list()
+            a.at[index, "geo75"] = ','.join(close)
+            print(row["Iata"] + "|" + str(a.at[index,"geo25"]) + "|" + str(a.at[index,"geo50"]) + "|" + str(a.at[index,"geo75"]))
+
+        a.drop(columns=["distance"])
+
+        table = pa.Table.from_pandas(a)
+        pq.write_to_dataset(table, root_path=self.__airports_parquet)
+
+    def calc_geo(self, row, coordinates_1):
+        coords_2 = (row["Latitude"], row["Longitude"])
+        return geopy.distance.distance(coordinates_1, coords_2).miles
+
+
 
 
 
