@@ -77,12 +77,12 @@ class RecommendationService:
                             days_min_target,days_max_target, days_min_int2, days_max_int2, airport_distance):
 
         #print("in reccomendations")
-        self.__days_min_int1 = days_min_int1-1
-        self.__days_max_int1 = days_max_int1+1
-        self.__days_min_int2 = days_min_int2-1
-        self.__days_max_int2 = days_max_int2+1
-        self.__days_min_target = days_min_target-1
-        self.__days_max_target = days_max_target+1
+        self.__days_min_int1 = days_min_int1
+        self.__days_max_int1 = days_max_int1
+        self.__days_min_int2 = days_min_int2
+        self.__days_max_int2 = days_max_int2
+        self.__days_min_target = days_min_target
+        self.__days_max_target = days_max_target
         self.__airport_distance = airport_distance
         self.__directs = directs
         self.__airports = airports
