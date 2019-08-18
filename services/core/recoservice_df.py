@@ -88,6 +88,7 @@ class RecommendationService:
         self.__airports = airports
 
         self.__seen : dict = {}
+        self.__cache: dict = {}
         start = time.time()
         q: queue.Queue = self.get_initial_queue(sources)
         df: pd.DataFrame = pd.DataFrame()
